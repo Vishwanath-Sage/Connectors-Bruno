@@ -1,0 +1,19 @@
+meta {
+  name: NAS 
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://qa01-api.nas-eng.sage.com/application/clients/3gZbXMLjO7Jvgkgu3VPKEFN4Bv5Wqr52
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{sage_id_access_token}}
+}
+
+settings {
+  encodeUrl: true
+}

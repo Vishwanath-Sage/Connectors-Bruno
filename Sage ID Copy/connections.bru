@@ -1,0 +1,48 @@
+meta {
+  name: connections
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/connectors/erp/datasets/cb2068a5-2da1-c8dc-f791-d1ebd03afbcd/connections?include=details
+  body: json
+  auth: bearer
+}
+
+params:query {
+  include: details
+}
+
+headers {
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+  Idempotency-Key: {{$guid}}
+}
+
+auth:bearer {
+  token: {{sage_id_access_token}}
+}
+
+body:json {
+  {
+      "data": {
+          "type": "connection",
+          "attributes": {
+              "appId": "00000000-0000-0000-0000-000000000004",
+              "connectionInfo": {
+                  "realmId": "e2b Teknologies-DEV",
+                  "username": "admin",
+                  "password": "Systems1!"
+              },
+              "startSync": true,
+              "created": "2024-07-30T07:32:30.206Z",
+              "modified": "2024-07-30T07:32:30.206Z"
+          }
+      }
+  }
+}
+
+settings {
+  encodeUrl: true
+}

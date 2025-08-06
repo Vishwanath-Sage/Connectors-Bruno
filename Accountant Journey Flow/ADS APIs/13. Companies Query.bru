@@ -1,0 +1,46 @@
+meta {
+  name: 13. Companies Query
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{ADSBaseURL}}/api/v1/Companies/query
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Group-Key: {{networkProductInstancesTenantId}}
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response time is less than 2000ms", function () {
+    expect(res.getResponseTime()).to.be.below(20000);
+  });
+  
+  test("Validate response schema for totalCount, pageSize, and records", function () {
+      const responseData = res.getBody();
+  
+      expect(responseData).to.be.an('object');
+      expect(responseData.totalCount).to.exist.and.to.be.a('number');
+      expect(responseData.pageSize).to.exist.and.to.be.a('number');
+      expect(responseData.records).to.exist.and.to.be.an('array');
+  });
+  
+  test("Number of Companies matches Companies uploaded in Sync.", function () {
+      let response = res.getBody();
+      let totalCompaniesCount = response.totalCount;
+      let expectedCompaniesCount = bru.getVar("Company_insertCount");
+  
+      expect(expectedCompaniesCount).to.eql(totalCompaniesCount);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

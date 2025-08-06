@@ -1,0 +1,28 @@
+meta {
+  name: retrieve sync task for ToNetwork
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{base_url}}/connectors/erp/datasets/{{dataset_id}}/sync-tasks/{{sync_task_id}}?include=Details
+  body: none
+  auth: bearer
+}
+
+params:query {
+  include: Details
+}
+
+headers {
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+}
+
+auth:bearer {
+  token: {{sage_id_access_token}}
+}
+
+settings {
+  encodeUrl: true
+}

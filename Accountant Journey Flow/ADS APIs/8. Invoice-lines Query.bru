@@ -1,0 +1,62 @@
+meta {
+  name: 8. Invoice-lines Query
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{ADSBaseURL}}/api/v1/invoice-lines/query
+  body: none
+  auth: inherit
+}
+
+headers {
+  accept: application/json
+  X-Group-Key: {{networkProductInstancesTenantId}}
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response time is less than 200ms", function () {
+    expect(res.getResponseTime()).to.be.below(200);
+  });
+  
+  test("Response has the required fields - totalCount, pageSize, and records", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.totalCount).to.exist;
+      expect(responseData.pageSize).to.exist;
+      expect(responseData.records).to.exist;
+  });
+  
+  test("Total count and page size are non-negative integers", function () {
+    const responseData = res.getBody();
+    
+    expect(responseData).to.be.an('object');
+    expect(responseData.totalCount).to.be.a('number').and.to.be.at.least(0);
+    expect(responseData.pageSize).to.be.a('number').and.to.be.at.least(0);
+  });
+  
+  test("Records is an empty array", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.records).to.be.an('array').that.is.empty;
+  });
+  
+  test("Number of Invoice-Lines matches Invoice-Lines uploaded in Sync.", function () {
+      let response = res.getBody();
+      let totalInvoiceLinesCount = response.totalCount;
+      let expectedInvoiceLinesCount = bru.getVar("InvoiceLine_insertCount");
+  
+      expect(expectedInvoiceLinesCount).to.eql(totalInvoiceLinesCount);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

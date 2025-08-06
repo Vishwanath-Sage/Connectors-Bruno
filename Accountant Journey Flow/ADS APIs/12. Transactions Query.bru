@@ -1,0 +1,87 @@
+meta {
+  name: 12. Transactions Query
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{ADSBaseURL}}/api/v1/Transactions/query?legacy=false
+  body: none
+  auth: inherit
+}
+
+params:query {
+  legacy: false
+}
+
+headers {
+  accept: application/json
+  X-Group-Key: {{networkProductInstancesTenantId}}
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Response time is less than 200ms", function () {
+    expect(res.getResponseTime()).to.be.below(200);
+  });
+  
+  
+  test("Summary object should exist and be an object", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.summary).to.exist.and.to.be.an('object');
+  });
+  
+  
+  test("Currency summaries array and its elements are present", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.currencySummaries).to.be.an('array').that.is.not.empty;
+      
+      responseData.currencySummaries.forEach(function(currencySummary) {
+          expect(currencySummary).to.be.an('object');
+          expect(currencySummary.currencyCode).to.exist.and.to.be.a('string');
+          expect(currencySummary.totalAmount).to.exist.and.to.be.a('number');
+          expect(currencySummary.outstandingAmount).to.exist.and.to.be.a('number');
+      });
+  });
+  
+  
+  test("Validate the 'records' array and its elements", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.records).to.be.an('array').and.to.have.lengthOf.at.least(1, "'records' array should not be empty");
+  
+      responseData.records.forEach(function(record) {
+          expect(record).to.be.an('object');
+          expect(record.groupKey).to.exist.and.to.be.a('string');
+          expect(record.baseCurrencyCode).to.exist.and.to.be.a('string');
+          expect(record.referenceNumber).to.exist.and.to.be.a('string');
+          expect(record.transactionId).to.exist.and.to.be.a('string');
+          expect(record.transactionStatus).to.exist.and.to.be.a('string');
+          expect(record.transactionType).to.exist.and.to.be.a('string');
+          expect(record.transactionDate).to.exist.and.to.be.a('string');
+          expect(record.dueDate).to.exist.and.to.be.a('string');
+          expect(record.daysPastDue).to.exist.and.to.be.a('number');
+          expect(record.currencyCode).to.exist.and.to.be.a('string');
+          expect(record.transactionAmount).to.exist.and.to.be.a('number');
+          expect(record.outstandingAmount).to.exist.and.to.be.a('number');
+          expect(record.baseCurrencyTransactionAmount).to.exist.and.to.be.a('number');
+          expect(record.baseCurrencyOutstandingAmount).to.exist.and.to.be.a('number');
+          expect(record.transactionDetailCount).to.exist.and.to.be.a('number');
+          expect(record.supportsErpPdfRetrieval).to.exist.and.to.be.a('boolean');
+          expect(record.transactionCustomerId).to.exist.and.to.be.a('string');
+          expect(record.transactionCustomerName).to.exist.and.to.be.a('string');
+      });
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

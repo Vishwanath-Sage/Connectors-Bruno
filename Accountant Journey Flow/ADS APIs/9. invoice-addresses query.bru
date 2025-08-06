@@ -1,0 +1,50 @@
+meta {
+  name: 9. invoice-addresses query
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{ADSBaseURL}}/api/v1/invoice-addresses/query
+  body: none
+  auth: inherit
+}
+
+headers {
+  accept: application/json
+  X-Group-Key: {{networkProductInstancesTenantId}}
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response content type is application/json", function () {
+      expect(res.getHeader("Content-Type")).to.include("application/json");
+  });
+  
+  test("Response time is within an acceptable range", function () {
+    expect(res.getResponseTime()).to.be.below(300);
+  });
+  
+  test("Validate schema for totalCount, pageSize, and records properties", function () {
+      const responseData = res.getBody();
+  
+      expect(responseData).to.be.an('object');
+      expect(responseData.totalCount).to.exist.and.to.be.a('number');
+      expect(responseData.pageSize).to.exist.and.to.be.a('number');
+      expect(responseData.records).to.exist.and.to.be.an('array');
+  });
+  
+  test("Records array is present and empty", function () {
+    const responseData = res.getBody();
+    
+    expect(responseData).to.be.an('object');
+    expect(responseData.records).to.exist.and.to.be.an('array').that.is.empty;
+  });
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,68 @@
+meta {
+  name: 16. SNA User Roles API
+  type: http
+  seq: 2
+}
+
+get {
+  url: https://app.eu.qa.lockstep.io/api/v1/UserRoles/query
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Group-Key: {{networkProductInstancesTenantId}}
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Response has the required fields", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData).to.have.property('totalCount');
+      expect(responseData).to.have.property('pageSize');
+      expect(responseData).to.have.property('records');
+  });
+  
+  
+  // // pm.test("Records array is present and has expected number of elements", function () {
+  // //     const responseData = pm.response.json();
+      
+  // //     pm.expect(responseData).to.be.an('object');
+  // //     pm.expect(responseData.records).to.exist.and.to.be.an('array');
+  // //     pm.expect(responseData.records).to.have.lengthOf(1);
+  // });
+  
+  
+  // // pm.test("Verify the presence and data types of user role properties", function () {
+  // //     const responseData = pm.response.json();
+  
+  // //     pm.expect(responseData).to.be.an('object');
+  // //     pm.expect(responseData.records).to.be.an('array');
+  
+  //     responseData.records.forEach(function(record) {
+  // //         pm.expect(record.userRoleId).to.be.a('string');
+  // //         pm.expect(record.groupKey).to.be.a('string');
+  // //         pm.expect(record.userRoleName).to.be.a('string');
+  // //         pm.expect(record.created).to.be.a('string');
+  // //         pm.expect(record.createdUserId).to.be.a('string');
+  // //         pm.expect(record.modified).to.be.a('string');
+  // //         pm.expect(record.modifiedUserId).to.be.a('string');
+  //     });
+  // });
+  
+  
+  test("Response time is less than 2000ms", function () {
+    expect(res.getResponseTime()).to.be.below(2000);
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Sage ID Copy",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

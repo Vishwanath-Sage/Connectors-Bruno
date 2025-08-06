@@ -1,0 +1,66 @@
+meta {
+  name: 11. Attachments Query
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{ADSBaseURL}}/api/v1/Attachments/query
+  body: none
+  auth: bearer
+}
+
+headers {
+  accept: application/json
+  X-Group-Key: {{networkProductInstancesTenantId}}
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJVUXlRME0wTWtOQk5rUkJOVGxETXpaQ056VXhPVVUyUkRZNU5EbEJOVVF6T0VSQk1EQXdNQSJ9.eyJpc3MiOiJodHRwczovL2lkLXNoYWRvdy5zYWdlLmNvbS8iLCJzdWIiOiIzZ1piWE1Mak83SnZna2d1M1ZQS0VGTjRCdjVXcXI1MkBjbGllbnRzIiwiYXVkIjoic25ldC1kZXYvbmV0d29yay9hcGkiLCJpYXQiOjE3MzgyNDUyMzEsImV4cCI6MTczODI3NDAzMSwic2NvcGUiOiJhbGwiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMiLCJhenAiOiIzZ1piWE1Mak83SnZna2d1M1ZQS0VGTjRCdjVXcXI1MiJ9.iozK2asegVAu8fPh4kkv0JCe8B4gL58gOpZRDjTiAZ5ZpwNPo6J8AP73HSIhWKUoY5y4u_MSKyxEXZywTmWijzyK0uRDV-fHBL5xp594c0X8x4kBTyMXtTWJPDxIbA-H7MaPGgOx0kuqc7Hc9zRKa1QsIPKcejM6yVOLW2CQZtIo2YgmGQpxmYYIaGm9fbQV3MZPkU8SZE-S3O8D423XJFkBPxuU1ahAcT_Sc7EVHqxZlg1ogkUmd6HzIZkLQ7Ij3dJGezyGxjzAITzBkuOpg8z3YumBm-P0wuzxtbZVIqOoUEc8dWXmDjYvtiZwv_T4BsIvoVbMawaRqQ2pVm9Ejw
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response time is less than 200ms", function () {
+    expect(res.getResponseTime()).to.be.below(200);
+  });
+  
+  test("Response has the required fields", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.totalCount).to.exist;
+      expect(responseData.pageSize).to.exist;
+      expect(responseData.records).to.exist;
+  });
+  
+  test("TotalCount and PageSize should be non-negative integers", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.totalCount).to.be.a('number').and.to.be.at.least(0);
+      expect(responseData.pageSize).to.be.a('number').and.to.be.at.least(0);
+  });
+  
+  test("Records array is present and empty", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.records).to.exist.and.to.be.an('array').that.is.empty;
+  });
+  
+  test("Number of Attachments matches Attachments uploaded in Sync.", function () {
+      let response = res.getBody();
+      let totalAttachmentsCount = response.totalCount;
+      let expectedAttachmentsCount = bru.getVar("Attachments_updateCount");
+  
+      expect(expectedAttachmentsCount).to.eql(totalAttachmentsCount);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,19 @@
+meta {
+  name: WorkflowStatus
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{ADSapi}}/workflow-statuses/query
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Group-Key: {{networkProductInstancesTenantIdBuyer}}
+}
+
+settings {
+  encodeUrl: true
+}

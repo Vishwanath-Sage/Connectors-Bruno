@@ -1,0 +1,30 @@
+meta {
+  name: Attachments download URL
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{ADSBaseURL}}/api/v1/Attachments/{{connectorAttachmentId}}/download-url
+  body: none
+  auth: bearer
+}
+
+headers {
+  accept: application/json
+  x-group-key: 09fee7e7-0d0b-ded3-b66c-c338f385bbb4
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJVUXlRME0wTWtOQk5rUkJOVGxETXpaQ056VXhPVVUyUkRZNU5EbEJOVVF6T0VSQk1EQXdNQSJ9.eyJpc3MiOiJodHRwczovL2lkLXNoYWRvdy5zYWdlLmNvbS8iLCJzdWIiOiIzZ1piWE1Mak83SnZna2d1M1ZQS0VGTjRCdjVXcXI1MkBjbGllbnRzIiwiYXVkIjoic25ldC1kZXYvbmV0d29yay9hcGkiLCJpYXQiOjE3MzgyNDUyMzEsImV4cCI6MTczODI3NDAzMSwic2NvcGUiOiJhbGwiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMiLCJhenAiOiIzZ1piWE1Mak83SnZna2d1M1ZQS0VGTjRCdjVXcXI1MiJ9.iozK2asegVAu8fPh4kkv0JCe8B4gL58gOpZRDjTiAZ5ZpwNPo6J8AP73HSIhWKUoY5y4u_MSKyxEXZywTmWijzyK0uRDV-fHBL5xp594c0X8x4kBTyMXtTWJPDxIbA-H7MaPGgOx0kuqc7Hc9zRKa1QsIPKcejM6yVOLW2CQZtIo2YgmGQpxmYYIaGm9fbQV3MZPkU8SZE-S3O8D423XJFkBPxuU1ahAcT_Sc7EVHqxZlg1ogkUmd6HzIZkLQ7Ij3dJGezyGxjzAITzBkuOpg8z3YumBm-P0wuzxtbZVIqOoUEc8dWXmDjYvtiZwv_T4BsIvoVbMawaRqQ2pVm9Ejw
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  Generated from cURL: curl -X 'GET' \
+    'https://api.qa.lockstep.io/api/v1/Attachments/c0bf1545-ab8e-4fe4-adf6-02a8233041f2/download-url' \
+    -H 'accept: application/json'
+}

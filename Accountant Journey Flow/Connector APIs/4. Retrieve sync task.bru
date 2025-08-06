@@ -1,0 +1,117 @@
+meta {
+  name: 4. Retrieve sync task
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks/{{connectorSyncTaskId}}?include=details
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: details
+}
+
+headers {
+  accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  // // pm.test("Poll the response body for 'Completed' status", function () {
+  
+  // // var jsonData = pm.response.json();
+  // const targetStatus = "Completed";
+  // const responseStatus = jsonData.data.attributes.status;
+  // const maxRetries = 40;
+  // const retryInterval = 10000;
+  
+  
+  // if (responseStatus != targetStatus) {
+  // //     if (pm.environment.get("retryCount") == undefined) {
+  // //         pm.environment.set("retryCount", 0);
+  //     } else {
+  // //         const retryCount = parseInt(pm.environment.get("retryCount"));
+  // //         pm.environment.set("retryCount", (retryCount + 1));
+  //         if (retryCount < maxRetries) {
+  //             setTimeout(() => {
+  // //                 pm.execution.setNextRequest(pm.info.requestName);
+  //             }, retryInterval);
+  //         } else {
+  //             console.log("Max retries reached. Target status not reached.");
+  // //             pm.environment.unset("retryCount");
+  // //             pm.execution.setNextRequest(null);
+  //         }
+  //     }
+  // }
+  // //         // var responseData = pm.response.json();
+  // //         //  pm.expect(responseData.data.attributes.status).to.equal("Completed");
+  // });
+  // // pm.test("Poll the response body for 'Awaiting','Processing' or 'Completed' status", function () {
+  // //     var responseData = pm.response.json();
+  // //     pm.expect(responseData.data.attributes.status).to.be.oneOf(["Completed","Awaiting","Processing"]);
+  // });
+  
+  test("OperationType should be ToNetwork", function(){
+      var responseData = res.getBody();
+      expect(responseData.data.attributes.operationType).to.equal("ToNetwork");
+  });
+  
+  test("packageType should be Full", function(){
+      var responseData = res.getBody();
+      expect(responseData.data.attributes.packageType).to.equal("Full");
+  });
+  
+  // // pm.test("Response time is within an acceptable range", function () {
+  // //     pm.expect(pm.response.responseTime).to.be.below(3000);
+  // });
+  
+  var jsonData = res.getBody();
+  if(jsonData.included && jsonData.included.length > 0) {
+      bru.setVar("sync_task_id", jsonData.data.id);
+  
+      bru.setVar("Attachments_insertCount", jsonData.included[0].attributes.report?.Attachment?.insertCount);
+      bru.setVar("Attachments_updateCount",jsonData.included[0].attributes.report?.Attachment?.updateCount);
+  
+      bru.setVar("BaseCurrency_insertCount", jsonData.included[0].attributes.report?.BaseCurrency?.insertCount);
+      bru.setVar("BaseCurrency_updateCount",jsonData.included[0].attributes.report?.BaseCurrency?.updateCount);
+  
+      bru.setVar("Company_insertCount", jsonData.included[0].attributes.report?.Company?.insertCount);
+      bru.setVar("Company_updateCount",jsonData.included[0].attributes.report?.Company?.updateCount);
+  
+      bru.setVar("Contact_insertCount", jsonData.included[0].attributes.report?.Contact?.insertCount);
+      bru.setVar("Contact_updateCount",jsonData.included[0].attributes.report?.Contact?.updateCount);
+  
+      bru.setVar("FinancialAccount_insertCount", jsonData.included[0].attributes.report?.FinancialAccount?.insertCount);
+      bru.setVar("FinancialAccount_updateCount",jsonData.included[0].attributes.report?.FinancialAccount?.updateCount);
+  
+      bru.setVar("FinancialAccountBalanceHistory_insertCount", jsonData.included[0].attributes.report?.FinancialAccountBalanceHistory?.insertCount);
+      bru.setVar("FinancialAccountBalanceHistory_updateCount",jsonData.included[0].attributes.report?.FinancialAccountBalanceHistory?.updateCount);
+  
+      bru.setVar("FinancialYearSetting_insertCount", jsonData.included[0].attributes.report?.FinancialYearSetting?.insertCount);
+      bru.setVar("FinancialYearSetting_updateCount",jsonData.included[0].attributes.report?.FinancialYearSetting?.updateCount);
+  
+      bru.setVar("Invoice_insertCount", jsonData.included[0].attributes.report?.Invoice?.insertCount);
+      bru.setVar("Invoice_updateCount",jsonData.included[0].attributes.report?.Invoice?.updateCount);
+  
+      bru.setVar("InvoiceLine_insertCount", jsonData.included[0].attributes.report?.InvoiceLine?.insertCount);
+      bru.setVar("InvoiceLine_updateCount",jsonData.included[0].attributes.report?.InvoiceLine?.updateCount);
+  
+      bru.setVar("Payment_insertCount", jsonData.included[0].attributes.report?.Payment?.insertCount);
+      bru.setVar("Payment_updateCount",jsonData.included[0].attributes.report?.Payment?.updateCount);
+  
+      bru.setVar("PaymentApplied_insertCount", jsonData.included[0].attributes.report?.PaymentApplied?.insertCount);
+      bru.setVar("PaymentApplied_updateCount",jsonData.included[0].attributes.report?.PaymentApplied?.updateCount);
+  
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+}

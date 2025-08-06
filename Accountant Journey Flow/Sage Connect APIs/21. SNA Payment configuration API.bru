@@ -1,0 +1,23 @@
+meta {
+  name: 21. SNA Payment configuration API
+  type: http
+  seq: 7
+}
+
+get {
+  url: https://qa.network.sage.com/portal/api/api/v1/payment_configuration/38863a91-0a30-47b0-b0d1-722c03af4b29?providers=Stripe%2CPayPal
+  body: none
+  auth: inherit
+}
+
+params:query {
+  providers: Stripe%2CPayPal
+}
+
+headers {
+  X-Group-Key: {{networkProductInstancesTenantId}}
+}
+
+settings {
+  encodeUrl: true
+}

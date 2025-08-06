@@ -1,0 +1,47 @@
+meta {
+  name: 6. Payments Query
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{ADSBaseURL}}/api/v1/payments/query
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Group-Key: {{networkProductInstancesTenantId}}
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response time is less than 2000ms", function () {
+    expect(res.getResponseTime()).to.be.below(2000);
+  });
+  
+  test("Presence of required fields in the response", function () {
+      const responseData = res.getBody();
+  
+      expect(responseData).to.be.an('object');
+      expect(responseData).to.have.property('payment_id');
+      expect(responseData).to.have.property('amount');
+      expect(responseData).to.have.property('status');
+      expect(responseData).to.have.property('timestamp');
+  });
+  
+  test("Number of Payments matches Payments uploaded in Sync.", function () {
+      let response = res.getBody();
+      let totalPaymentCount = response.totalCount;
+      let expectedPaymentCount = bru.getVar("Payment_insertCount");
+  
+      expect(expectedPaymentCount).to.eql(totalPaymentCount);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

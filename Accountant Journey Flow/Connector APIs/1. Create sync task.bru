@@ -1,0 +1,87 @@
+meta {
+  name: 1. Create sync task
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+  Idempotency-Key: {{$guid}}
+}
+
+body:json {
+  {
+      "data": {
+          "type": "SyncTask",
+          "attributes": {
+              "packageType": "Full"
+          }
+      }
+  }
+}
+
+script:post-response {
+  test("Created", function(){
+      expect(res.getStatus()).to.equal(201);
+  })
+  
+  var jsonData = res.getBody();
+  bru.setEnvVar("connectorSyncTaskId", jsonData.data.id);
+  bru.setEnvVar("connectorBlobUploadUrl", 
+          jsonData.included[0].attributes.uploadUrl);
+  bru.setEnvVar("connectorAttachmentId", 
+          jsonData.data.relationships.attachment.data.id);
+  
+  test("Response status code is 201", function () {
+      expect(res.getStatus()).to.equal(201);
+  });
+  
+  
+  test("Response time is within acceptable range", function () {
+    expect(res.getResponseTime()).to.be.below(4000);
+  });
+  
+  
+  test("Data object has correct structure", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.data).to.be.an('object');
+      expect(responseData.data.type).to.be.a('string');
+      expect(responseData.data.id).to.be.a('string');
+      expect(responseData.data.attributes).to.be.an('object');
+      expect(responseData.data.relationships).to.be.an('object');
+  });
+  
+  
+  test("Meta object should exist and be an object", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.meta).to.exist.and.to.be.an('object');
+  });
+  
+  test("Meta object should contain createdAt and modifiedAt properties", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.meta).to.have.property('createdAt');
+      expect(responseData.meta).to.have.property('modifiedAt');
+  });
+  
+  
+  // Test for checking the sync task is always created
+  test("Sync task created",function(){
+     const responseData=res.getBody();
+     expect(responseData.data.id).to.not.be.null;
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

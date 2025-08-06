@@ -1,0 +1,19 @@
+meta {
+  name: Status
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{ADSapi}}/status
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Group-Key: {{networkProductInstancesTenantIdBuyer}}
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,25 @@
+meta {
+  name: 2. Upload zip file
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{connectorBlobUploadUrl}}
+  body: file
+  auth: none
+}
+
+headers {
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+  x-ms-blob-type: BlockBlob
+}
+
+body:file {
+  file: @file(C:\Users\vishwanath.gv\OneDrive - Sage Software, Inc\Desktop\Sage 50\Sage 50 Zip files\Diff Sizes\file.zip) @contentType(application/zip)
+}
+
+settings {
+  encodeUrl: false
+}

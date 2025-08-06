@@ -1,0 +1,20 @@
+meta {
+  name: 2. User information
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{sageIdURL}}/userinfo
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  //var jsonData = JSON.parse(responseBody);
+  //bru.setEnvVar("provisionAccountEmail", jsonData.email);
+}
+
+settings {
+  encodeUrl: true
+}

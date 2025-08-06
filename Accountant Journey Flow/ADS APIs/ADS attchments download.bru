@@ -1,0 +1,30 @@
+meta {
+  name: ADS attchments download
+  type: http
+  seq: 13
+}
+
+get {
+  url: https://api.eu.int.lockstep.io/api/v1/Invoices/fe4531fe-fbb5-4cb4-b589-4e57d8d65e71?include=PDFSupport
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: PDFSupport
+}
+
+headers {
+  accept: application/json
+  X-Group-Key: {{networkProductInstancesTenantId}}
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  Generated from cURL: curl -X 'GET' \
+    'https://api.eu.int.lockstep.io/api/v1/Invoices/fa4d5cfe-b2d8-4a5e-b4e7-0901513ec521?include=PDFSupport' \
+    -H 'accept: application/json'
+}

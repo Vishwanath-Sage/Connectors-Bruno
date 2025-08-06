@@ -1,0 +1,24 @@
+meta {
+  name: 15. ADS Query Sync Status
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{ADSBaseURL}}/api/v1/Sync/query?operationType=Read
+  body: none
+  auth: inherit
+}
+
+params:query {
+  operationType: Read
+}
+
+headers {
+  accept: application/json
+  X-Group-key: {{networkProductInstancesTenantId}}
+}
+
+settings {
+  encodeUrl: true
+}

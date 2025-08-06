@@ -1,0 +1,127 @@
+meta {
+  name: 3. ProvisionAccount returns 202
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{connectedBridgeURL}}/provision/account
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  X-Idempotency-Key: {{provisionAccountIdempotency}}
+}
+
+body:json {
+  {
+      "User": {
+          "Email": "{{provisionAccountEmail}}", 
+          "FirstName": "{{$randomFirstName}}",
+          "LastName": "{{$randomLastName}}",
+          "Locale": "fr-FR"
+      },
+      "Account": {},
+      "ProductSubscription": {
+          "ManagingAccountId": "{{provisionAccountManagingAccountId}}",
+          "SubscriptionId": "{{provisionAccountSubscriptionId}}",
+          "Origin": "{{origin}}",
+          "BackOfficeId": "{{provisionAccountBackOfficeId}}", 
+          "BackOfficeSource": "{{STSProvider}}"
+      },
+  "ProductLicences": [{
+      "Product": "{{productCode}}",
+      "ProductLicenseType": "{{productLicenseType}}",
+      "Expires": "2025-03-12 10:38:14Z"
+      },
+   {"Product": "network",
+              "ProductLicenseType": "network-standard",
+              "Expires": "2030-01-01T00:00:00+00:00"
+      }],
+      "Licence": {
+              "Application": "{{STSApplication}}",
+              "Version": "{{STSVersion}}",
+              "Provider": "{{STSProvider}}",
+              "LicenceData": "{{STSLicenseData}}"
+      },
+      "Business": {
+          "Name": "{{provisionAccountName}}",
+          "ExternalId": "{{provisionAccountExternalId}}",
+          "ExternalSource": "Sage Desktop",
+          "RegisteredLocation": "FR",
+          "RegisteredCountry": "FR",
+          "BusinessAddress": {
+              "Type": "main",
+              "Line1": "Sage",
+              "Country": "FR"
+          },
+          "ProductInstance": {
+              "Name": "{{productCode}}",
+              "ProductCode": "{{productCode}}"
+          }
+     }  
+  }
+}
+
+script:pre-request {
+  // Generate random UUID for header X-Idempotency-Key
+  var uuid = require('uuid'); var randomUUID = uuid.v4();
+  bru.setEnvVar("provisionAccountIdempotency", randomUUID);
+  
+  // Generate random UUID for body BackOfficeId
+  var uuid = require('uuid'); var randomUUID = uuid.v4();
+  bru.setEnvVar("provisionAccountBackOfficeId", randomUUID);
+  
+  // Generate random UUID for body ExternalId
+  var uuid = require('uuid'); var randomUUID = uuid.v4();
+  bru.setEnvVar("provisionAccountExternalId", randomUUID);
+  
+  // account name
+  bru.setEnvVar("provisionAccountName", bru.interpolate('{{$randomCompanyName}}'));
+  
+  //create ManagingAccountId
+  function randomString(minValue, maxValue, dataSet = 'abcdefghijklmnopqrstuvwxyz0123456789') {
+      if (!minValue) {
+          minValue = 50;
+          maxValue = 50;
+      }
+      if (!maxValue) {
+          maxValue = minValue;
+      }
+      let length = _.random(minValue, maxValue),
+          randomString = "";
+      for (let i = 0; i < length; i++)
+          randomString += dataSet.charAt(Math.floor(Math.random() * dataSet.length));
+      return randomString;
+  }
+  bru.setEnvVar('provisionAccountManagingAccountId', randomString());
+  
+  //create SubscriptionId
+  function randomString(minValue, maxValue, dataSet = 'abcdefghijklmnopqrstuvwxyz0123456789') {
+      if (!minValue) {
+          minValue = 50;
+          maxValue = 50;
+      }
+      if (!maxValue) {
+          maxValue = minValue;
+      }
+      let length = _.random(minValue, maxValue),
+          randomString = "";
+      for (let i = 0; i < length; i++)
+          randomString += dataSet.charAt(Math.floor(Math.random() * dataSet.length));
+      return randomString;
+  }
+  bru.setEnvVar('provisionAccountSubscriptionId', randomString());
+}
+
+script:post-response {
+  test("OK", function () {
+      expect(res.getStatus()).to.equal(202);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

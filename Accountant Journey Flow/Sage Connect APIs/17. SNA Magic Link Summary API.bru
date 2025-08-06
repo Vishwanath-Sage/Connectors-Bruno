@@ -1,0 +1,61 @@
+meta {
+  name: 17. SNA Magic Link Summary API
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{ADSBaseURL}}/api/v1/Companies/views/magic-link-summary?filter=%28%28latestMagicLinkDate+LT+2024-06-05+OR+latestMagicLinkDate+IS+NULL%29+AND+companyType+EQ+Customer+AND+%28inviteStatus+EQ+Active+OR+inviteStatus+IS+NULL%29%29+OR+%28inviteStatusModified+LT+2024-06-05+AND+inviteStatus+IN+%28%27Skipped%27%2C%27Completed%27%29%29&order=outstandingAmount+desc%2CcompanyName+asc&pageSize=1&pageNumber=0
+  body: none
+  auth: inherit
+}
+
+params:query {
+  filter: %28%28latestMagicLinkDate+LT+2024-06-05+OR+latestMagicLinkDate+IS+NULL%29+AND+companyType+EQ+Customer+AND+%28inviteStatus+EQ+Active+OR+inviteStatus+IS+NULL%29%29+OR+%28inviteStatusModified+LT+2024-06-05+AND+inviteStatus+IN+%28%27Skipped%27%2C%27Completed%27%29%29
+  order: outstandingAmount+desc%2CcompanyName+asc
+  pageSize: 1
+  pageNumber: 0
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Response time is less than 500ms", function () {
+    expect(res.getResponseTime()).to.be.below(500);
+  });
+  
+  
+  test("Validate the response schema for the presence of totalCount, pageSize, pageNumber, and records", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.totalCount).to.exist;
+      expect(responseData.pageSize).to.exist;
+      expect(responseData.pageNumber).to.exist;
+      expect(responseData.records).to.exist;
+  });
+  
+  
+  test("Total count is a non-negative integer", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.totalCount).to.be.a('number');
+      expect(responseData.totalCount).to.be.at.least(0);
+  });
+  
+  
+  test("Records is an array and is empty", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.records).to.be.an('array').and.to.be.empty;
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

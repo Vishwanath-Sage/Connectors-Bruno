@@ -1,0 +1,77 @@
+meta {
+  name: 7. Contacts Query
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{ADSBaseURL}}/api/v1/Contacts/query
+  body: none
+  auth: inherit
+}
+
+headers {
+  accept: application/json
+  X-Group-Key: {{networkProductInstancesTenantId}}
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response has the required fields", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.records).to.be.an('array');
+  
+      const requiredFields = [
+          "contactId", "companyId", "groupKey", "erpKey", "contactName", 
+          "contactCode", "emailAddress", "phone", "address1", "address2", 
+          "city", "stateRegion", "postalCode", "countryCode", "isActive", 
+          "created", "createdUserId", "modified", "modifiedUserId", 
+          "appEnrollmentId"
+      ];
+  
+      responseData.records.forEach(function(record) {
+          requiredFields.forEach(function(field) {
+              expect(record).to.have.property(field);
+          });
+      });
+  });
+  
+  test("Phone is in a valid format", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData.records).to.be.an('array');
+      responseData.records.forEach(function(record) {
+          expect(record.phone).to.match(/^\d{3}-\d{3}-\d{4}$/);
+      });
+  });
+  
+  test("Email is in a valid format", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      responseData.records.forEach(function(record) {
+          expect(record.emailAddress).to.be.a('string').and.to.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email format is not valid");
+      });
+  });
+  
+  test("Response time is less than 200ms", function () {
+    expect(res.getResponseTime()).to.be.below(200);
+  });
+  
+  test("Number of Contacts matches Contacts uploaded in Sync.", function () {
+      let response = res.getBody();
+      let totalContactCount = response.totalCount;
+      let expectedContactCount = bru.getVar("Contact_insertCount");
+  
+      expect(expectedContactCount).to.eql(totalContactCount);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,46 @@
+meta {
+  name: nas accounts
+  type: http
+  seq: 7
+}
+
+post {
+  url: https://qa01-api.nas-eng.sage.com/accounts
+  body: json
+  auth: bearer
+}
+
+headers {
+  X-Idempotency-Key: {{$guid}}
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{sage_id_access_token}}
+}
+
+body:json {
+  {
+      "type": "Account",
+      "attributes": {
+          "externalId": "5f6db324-ae45-4487-8af8-481005fd9052",
+          "externalSource": "intacct"
+      },
+      "relationships": {
+          "owner": {
+              "data": {
+                  "type": "User",
+                  "attributes": {
+                      "email": "demo.account+102@sage.mailinator.com",
+                      "locale": "en-GB",
+                      "identityId": "auth0|f5a970cb59e0adc5bf1d7f22f84e6a6cdf35133e39b910a8"
+                  }
+              }
+          }
+      }
+  }
+}
+
+settings {
+  encodeUrl: true
+}

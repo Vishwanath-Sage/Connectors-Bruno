@@ -1,0 +1,57 @@
+meta {
+  name: 18. SNA Companies Query API
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{ADSBaseURL}}/api/v1/Companies/query?pageNumber=0&pageSize=1&filter=companyType+eq+Customer+and+isActive+eq+false
+  body: none
+  auth: inherit
+}
+
+params:query {
+  pageNumber: 0
+  pageSize: 1
+  filter: companyType+eq+Customer+and+isActive+eq+false
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Response time is within acceptable range", function () {
+    expect(res.getResponseTime()).to.be.below(500);
+  });
+  
+  
+  // // pm.test("Validate the response schema for the required fields and data types", function () {
+  // //   const responseData = pm.response.json();
+    
+  // //   pm.expect(responseData).to.be.an('object');
+  // //   pm.expect(responseData.pageNumber).to.be.a('number');
+  // //   pm.expect(responseData.pageSize).to.be.a('number');
+  // //   pm.expect(responseData.totalCount).to.be.a('number');
+  // //   pm.expect(responseData.companies).to.be.an('array');
+  // //   pm.expect(responseData.companies.length).to.be.at.least(1);
+    
+  //   responseData.companies.forEach(function(company) {
+  // //     pm.expect(company.companyId).to.be.a('string');
+  // //     pm.expect(company.companyName).to.be.a('string');
+  // //     pm.expect(company.isActive).to.be.a('boolean');
+  // //     pm.expect(company.companyType).to.be.a('string');
+  // //     pm.expect(company.address).to.be.an('object');
+  // //     pm.expect(company.address.street).to.be.a('string');
+  // //     pm.expect(company.address.city).to.be.a('string');
+  // //     pm.expect(company.address.state).to.be.a('string');
+  // //     pm.expect(company.address.zipCode).to.be.a('string');
+  //   });
+  // });
+  
+}
+
+settings {
+  encodeUrl: true
+}

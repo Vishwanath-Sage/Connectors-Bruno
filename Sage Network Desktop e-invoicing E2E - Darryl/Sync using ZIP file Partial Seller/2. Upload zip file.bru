@@ -1,0 +1,34 @@
+meta {
+  name: 2. Upload zip file
+  type: http
+  seq: 2
+}
+
+put {
+  url: https://qaeuerpsync.blob.core.windows.net/sync/a4c0f2af-baec-8716-cd22-1a3562a2abcb/7ce27dad-1337-470a-a1aa-cf2df1d524fe/file.zip?sv=2023-11-03&st=2025-07-31T05%3A57%3A50Z&se=2025-08-01T11%3A57%3A50Z&sr=b&sp=w&sig=KuYEV0jbQyGk3ONInLbgDCiWfKG%2BRQQ%2FBjeClDvO6Zk%3D
+  body: file
+  auth: none
+}
+
+params:query {
+  sv: 2023-11-03
+  st: 2025-07-31T05%3A57%3A50Z
+  se: 2025-08-01T11%3A57%3A50Z
+  sr: b
+  sp: w
+  sig: KuYEV0jbQyGk3ONInLbgDCiWfKG%2BRQQ%2FBjeClDvO6Zk%3D
+}
+
+headers {
+  Content-Type: application/vnd
+  x-ms-blob-type: BlockBlob
+  Accept: application/vnd.api+json
+}
+
+body:file {
+  file: @file(C:\Users\vishwanath.gv\OneDrive - Sage Software, Inc\Desktop\Sage 50\Sage 50 Zip files\Diff Sizes\file.zip) @contentType(application/zip)
+}
+
+settings {
+  encodeUrl: false
+}

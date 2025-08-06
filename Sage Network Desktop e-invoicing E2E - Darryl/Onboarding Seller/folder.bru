@@ -1,0 +1,75 @@
+meta {
+  name: Onboarding Seller
+  seq: 1
+}
+
+auth {
+  mode: oauth2
+}
+
+auth:oauth2 {
+  grant_type: authorization_code
+  callback_url: https://jwt.io
+  authorization_url: https://id-shadow.sage.com/authorize
+  access_token_url: https://id-shadow.sage.com/oauth/token
+  refresh_token_url: 
+  client_id: {{client_id}}
+  client_secret: {{client_secret}}
+  scope: openid email profile offline_access user:full
+  state: 
+  pkce: false
+  credentials_placement: basic_auth_header
+  credentials_id: credentials
+  token_placement: header
+  token_header_prefix: Bearer
+  auto_fetch_token: true
+  auto_refresh_token: false
+}
+
+docs {
+  ### **Step 1. Login to Sage ID to obtain a user token**
+  
+  Within this folder 'onboarding', access the 'Authorisation' tab. Scroll to the bottom and choose 'Get New Access Token'. This will load the Sage ID login/sign up page.
+  
+  <img src="https://content.pstmn.io/8c577557-5e93-43c6-8f47-0196ce42beae/aW1hZ2UucG5n" width="1029" height="682">
+  
+  You can use an mailinator email address to login. If creating an account when you are requested to insert a one time pass code please use '123456'.
+  
+  <img src="https://content.pstmn.io/9c76da82-d8b3-4d06-a439-3f00cb214c17/aW1hZ2UucG5n" width="1966" height="1612">
+  
+  You will be giving a token, select `use token`.
+  
+  ### **Step 2.** Obtain the Sage ID email address
+  
+  Then call `GET {{sageIdURL}}/userinfo` to retrieve user-specific information associated with the Sage ID user token previously generated. This step is required within the postman flow to obtain the Sage ID email address to populate the Provision Account call.
+  
+  ### **Step 3.** Provision Sage Network account
+  
+  You should then provision a Sage Network account with the relevant details sent along within the request body. The Pre-req script will populate all the required varibales for testing purposes in the “Sage Network connector” enviorments file.
+  
+  If the values being passed are correct you will recieve a `201 created` response status.
+  
+  For a detailed description on the values required within this request see [desktop onboarding guide](https://developer.sage.com/internal/network-connectors/connector/get-started/desktop-onboarding/).
+  
+  ### **Step 4.** Poll Provision account
+  
+  Use the send button to make this call. You will get a `202 response` with no body until the records have been created in Connected Bridge and SXP Organisation Service. It can take upto 15 seconds for these records to be created and you will then get a 200 response with a body.
+  
+  All required values will be added to the “Sage Network Connector” enviorments file automatically.
+  
+  ### **Step 5.** Sage Network authorisation
+  
+  Within the 'Step 5.Sage Network authorisation' folder, access the 'Authorisation' tab. Scroll to the bottom and choose 'Get New Access Token'. This will load the Sage Network consent screen in which you are giving the Sage Network permission to access the account provisioned in step 2 and 3.
+  
+  <img src="https://content.pstmn.io/74a51714-fc88-4efa-8d78-0b59e1c29d79/aW1hZ2UucG5n" width="1312" height="655">
+  
+  Select continue on this screen.
+  
+  You will be giving an access and refresh token, select `use token`.
+  
+  **Good to know**: The refresh token returned at this stage is the long lived token which will have an expiry date of 5 years and should be securley stored within your application.EndFragment  
+  
+  ### 🥳Woo-hoo
+  
+  You can now use this Sage Network token to authenticate requests into the Sage Network connector API.
+}

@@ -1,0 +1,12 @@
+{
+  "version": "1",
+  "name": "Accountant Journey Flow",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ],
+  "moduleWhitelist": ["lodash"]
+ 
+  
+}

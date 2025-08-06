@@ -1,0 +1,50 @@
+meta {
+  name: Retry Sync API
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{connectorBaseUrl}}/connectors/erp/portal/sync-tasks/Actions?action=trigger
+  body: json
+  auth: bearer
+}
+
+params:query {
+  action: trigger
+}
+
+headers {
+  accept: application/vnd.api+json
+  Idempotency-Key: {{$guid}}
+  Authorization: Bearer eyJraWQiOiJiQXJ0dG1YYjF3eklIekFXdkdmNWFLbVRiNVVBQ08zZ1VpaXZFdWxzY1dBPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIyMTY3ZWE2ZC0wMGU1LTQxMDQtOTk4OC1hYjU1MmE4NTA5M2EiLCJjb2duaXRvOmdyb3VwcyI6WyJTTlBDb25uZWN0b3JzLUFkbWluR3JvdXAiLCJldS13ZXN0LTFfeXNxd2JCNlF5X0F6dXJlQUQiLCJTTlBDb25uZWN0b3JzLVJlZ3VsYXJHcm91cCJdLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtd2VzdC0xLmFtYXpvbmF3cy5jb21cL2V1LXdlc3QtMV95c3F3YkI2UXkiLCJ2ZXJzaW9uIjoyLCJjbGllbnRfaWQiOiI1cjRra2trZm4xaDlpODRwOGdydWo3YWkwOSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoib3BlbmlkIiwiYXV0aF90aW1lIjoxNzM5MjU3MTc0LCJleHAiOjE3MzkzMDAzNzQsImlhdCI6MTczOTI1NzE3NCwianRpIjoiZDUzMGFjY2YtYzM0NC00NTQ1LTljMmMtOGIzMTc5ZDE2N2Y3IiwidXNlcm5hbWUiOiJhenVyZWFkX3Zpc2h3YW5hdGguZ3ZAc2FnZS5jb20ifQ.Yz0AZSSj-dbAhniGIJksCmj81E4o1hSoJOCa7UXAAmfsIl5reLuENWta-12iRC12LE-FdhKASq9xY4tp92hzvBtVg_OegnqIoVKrGociQg5dNzNVkOEvhSrCCPL8mZX0-Rr8MAM0CHKyBTXjwrZNdy-W065g17idMETyfc7mqrlutdBooftMorseeqtMi1-z_cvtP1mtiICFyvigEFc1uKbXGmcFiAQksviVw1i5sJhEfhp_MLOXYDvjfDuAobL6Oo5F7m4fPv70Xlqq1qBxTA-o54lCvtmA8uyABsijxXA0IASlIIT9G1S5hnzrz82xD3E-baedGaL-MhldDGsyLg
+  Content-Type: application/vnd.api+json
+}
+
+auth:bearer {
+  token: eyJraWQiOiJiQXJ0dG1YYjF3eklIekFXdkdmNWFLbVRiNVVBQ08zZ1VpaXZFdWxzY1dBPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIyMTY3ZWE2ZC0wMGU1LTQxMDQtOTk4OC1hYjU1MmE4NTA5M2EiLCJjb2duaXRvOmdyb3VwcyI6WyJTTlBDb25uZWN0b3JzLUFkbWluR3JvdXAiLCJldS13ZXN0LTFfeXNxd2JCNlF5X0F6dXJlQUQiLCJTTlBDb25uZWN0b3JzLVJlZ3VsYXJHcm91cCJdLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtd2VzdC0xLmFtYXpvbmF3cy5jb21cL2V1LXdlc3QtMV95c3F3YkI2UXkiLCJ2ZXJzaW9uIjoyLCJjbGllbnRfaWQiOiI1cjRra2trZm4xaDlpODRwOGdydWo3YWkwOSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoib3BlbmlkIiwiYXV0aF90aW1lIjoxNzQ0MTg0NjYxLCJleHAiOjE3NDQyMjc4NjEsImlhdCI6MTc0NDE4NDY2MSwianRpIjoiOGNlMjMwMzctMTdkYS00MGZiLWEwNGItNTk1NDI2MzU2NDkxIiwidXNlcm5hbWUiOiJhenVyZWFkX3Zpc2h3YW5hdGguZ3ZAc2FnZS5jb20ifQ.BsTJW5xeDPC8gGx2Cuclza0XFdapk8PwpYdNSByDylrZtxuA35c3-xL6Sf4n9OhREuBq1vbgAFRCQVXOwgffEppIXex0Y1GmE_ThIRX1CLnFUoDlnIjcPkYCezP9nx4CKwaxTnUcRJUvK0vtbJD0P8BMF2ovJ_K5vfDQJHoh49izQ07nUVhtSqjV_gOIzDkuw7BcRyPSkuhP3xOS3qgvujaYv3YptybbasHFfhdIHO7kcroV7g5zxssPIRTZUOm4IlpnnXYsoC2SXEsG-njiN__gEDGZDtsAW1mDkNx0zefMXCfyonrjz2atus0ebU_IFQYQtdf3aX8ZGweklpBR2Q
+}
+
+body:json {
+  {
+      "data": {
+          "type": "synctask",
+          "id": "f6a603a9-a1d0-409d-a6af-b24d7f2d4b85",
+          "attributes": {
+              "isQueued": true
+          },
+          "relationships": {
+              "dataset": {
+                  "data": {
+                      "id": "28765322-6518-76df-b07b-74524a2c8ae3",
+                      "type": "dataset"
+                  }
+              }
+          }
+      }
+  }
+}
+
+settings {
+  encodeUrl: true
+}

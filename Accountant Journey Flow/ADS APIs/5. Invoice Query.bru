@@ -1,0 +1,51 @@
+meta {
+  name: 5. Invoice Query
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ADSBaseURL}}/api/v1/invoices/query
+  body: none
+  auth: bearer
+}
+
+headers {
+  X-Group-Key: {{networkProductInstancesTenantId}}
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJVUXlRME0wTWtOQk5rUkJOVGxETXpaQ056VXhPVVUyUkRZNU5EbEJOVVF6T0VSQk1EQXdNQSJ9.eyJodHRwczovL3NhZ2UuY29tL3NjaS9pZHAiOiJDbG91ZElEIiwiaXNzIjoiaHR0cHM6Ly9pZC1zaGFkb3cuc2FnZS5jb20vIiwic3ViIjoiYXV0aDB8OTdmYmM5NWViOThkY2FiMzRkZDM0NzAyNDE5YmE3NDc5OTdlODdhNmEwYjExMGU3IiwiYXVkIjpbInNuZXQtZGV2L25ldHdvcmsvYXBpIiwiaHR0cHM6Ly9zYWdlLWNpZC1zaGFkb3cuc2FnZWlkbm9ucHJvZC5hdXRoMGFwcC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzUyNDg4NDQ0LCJleHAiOjE3NTI1MTcyNDQsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJhenAiOiJmN1Jua084VmFIWmFwcWJqRjVOaWRjSTg4MGM5SXZ1QyJ9.BJ5Ej5CCyriRlxmwrDWdWylhdkm9o2hMaZzhTzvl8kbSkebDf7x-RarPzUYtp5qfEdEK9cGPFd4rr7zAr4TkwMcCxaHRqXOTO47O9QjkudbuD7YuYGOio4b1celyKqowLv5DXGO6A8-luWdfjXqxhTprXDtmoXMs2ZxQwxEvTo75YlyirD1L2l_js6fbQZC8vHsIKDR1c_Od_cCFe-PeAp8To2hlB-3RYSa3OXO3VbcnDIZv-TTQ85qHjOK-pUC7qGu7DbdHxInayiMkU02Q1zSpus4hfZy_TC-NWf4brf2TJgahcJKl9ZMsFx8BFubQzRAIbx9EGuMNaCwvUqO_dA
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response time is less than 2000ms", function () {
+    expect(res.getResponseTime()).to.be.below(20000);
+  });
+  
+  test("Validate response schema for totalCount, pageSize, and records", function () {
+      const responseData = res.getBody();
+  
+      expect(responseData).to.be.an('object');
+      expect(responseData.totalCount).to.exist.and.to.be.a('number');
+      expect(responseData.pageSize).to.exist.and.to.be.a('number');
+      expect(responseData.records).to.exist.and.to.be.an('array');
+  });
+  
+  test("Number of Invoices matches Invoices uploaded in Sync.", function () {
+      let response = res.getBody();
+      let totalInvoiceCount = response.totalCount;
+      let expectedInvoiceCount = bru.getVar("Invoice_insertCount");
+  
+      expect(expectedInvoiceCount).to.eql(totalInvoiceCount);
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

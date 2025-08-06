@@ -1,0 +1,19 @@
+meta {
+  name: Companies
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ADSapi}}/Companies/query
+  body: none
+  auth: inherit
+}
+
+headers {
+  X-Group-Key: {{networkProductInstancesTenantIdBuyer}}
+}
+
+settings {
+  encodeUrl: true
+}

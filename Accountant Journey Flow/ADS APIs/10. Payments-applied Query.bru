@@ -1,0 +1,78 @@
+meta {
+  name: 10. Payments-applied Query
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{ADSBaseURL}}/api/v1/payments-applied/query
+  body: none
+  auth: inherit
+}
+
+headers {
+  accept: application/json
+  X-Group-Key: {{networkProductInstancesTenantId}}
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response time is within an acceptable range", function () {
+    expect(res.getResponseTime()).to.be.below(200);
+  });
+  
+  test("Content-Type header is application/json", function () {
+      expect(res.getHeader("Content-Type")).to.include("application/json");
+  });
+  
+  test("Response has the required fields - totalCount, pageSize, and records", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData).to.have.property('totalCount');
+      expect(responseData).to.have.property('pageSize');
+      expect(responseData).to.have.property('records');
+  });
+  
+  test("Records array and nested properties structure and data types are valid", function () {
+    const responseData = res.getBody();
+    
+    expect(responseData).to.be.an('object');
+    expect(responseData.records).to.be.an('array');
+  
+    responseData.records.forEach(record => {
+      expect(record).to.be.an('object');
+      expect(record.groupKey).to.be.a('string');
+      expect(record.paymentAppliedId).to.be.a('string');
+      expect(record.invoiceId).to.be.a('string');
+      expect(record.paymentId).to.be.a('string');
+      expect(record.erpKey).to.be.a('string');
+      expect(record.erpUpdateStatus).to.be.a('number');
+      expect(record.erpUpdateAction).to.be.a('number');
+      expect(record.entryNumber).to.be.a('number');
+      expect(record.applyToInvoiceDate).to.be.a('string');
+      expect(record.paymentAppliedAmount).to.be.a('number');
+      expect(record.created).to.be.a('string');
+      expect(record.createdUserId).to.be.a('string');
+      expect(record.modified).to.be.a('string');
+      expect(record.modifiedUserId).to.be.a('string');
+      expect(record.appEnrollmentId).to.be.a('string');
+      expect(record.sourceModifiedDate).to.be.a('string');
+    });
+  });
+  
+  test("Number of Payments Applied matches Payments Applied uploaded in Sync.", function () {
+      let response = res.getBody();
+      let totalPaymentsAppliedCount = response.totalCount;
+      let expectedPaymentsAppliedCount = bru.getVar("PaymentApplied_insertCount");
+  
+      expect(expectedPaymentsAppliedCount).to.eql(totalPaymentsAppliedCount);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

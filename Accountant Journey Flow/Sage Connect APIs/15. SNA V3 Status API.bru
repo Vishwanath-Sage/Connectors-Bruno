@@ -1,0 +1,20 @@
+meta {
+  name: 15. SNA V3 Status API
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{SNABaseURL}}/portal/api/api/v3/status?user_type=customer&dataset_id={{networkProductInstancesTenantId}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  user_type: customer
+  dataset_id: {{networkProductInstancesTenantId}}
+}
+
+settings {
+  encodeUrl: true
+}

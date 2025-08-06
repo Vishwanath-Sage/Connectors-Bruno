@@ -1,0 +1,55 @@
+meta {
+  name: 14. credit-memos-applied Query
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{ADSBaseURL}}/api/v1/credit-memos-applied/query
+  body: none
+  auth: inherit
+}
+
+headers {
+  accept: application/json
+  X-Group-key: {{networkProductInstancesTenantId}}
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response time is less than 200ms", function () {
+    expect(res.getResponseTime()).to.be.below(200);
+  });
+  
+  test("Response has the required fields", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.totalCount).to.exist;
+      expect(responseData.pageSize).to.exist;
+      expect(responseData.records).to.exist;
+  });
+  
+  test("Total count and page size should be non-negative integers", function () {
+      const responseData = res.getBody();
+  
+      expect(responseData).to.be.an('object');
+      expect(responseData.totalCount).to.be.a('number').and.to.be.at.least(0);
+      expect(responseData.pageSize).to.be.a('number').and.to.be.at.least(0);
+  });
+  
+  test("Records is an empty array", function () {
+      const responseData = res.getBody();
+  
+      expect(responseData).to.be.an('object');
+      expect(responseData.records).to.be.an('array').that.is.empty;
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

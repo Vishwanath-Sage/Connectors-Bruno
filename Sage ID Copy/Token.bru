@@ -1,0 +1,38 @@
+meta {
+  name: Token
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://id-shadow.sage.com/oauth/token
+  body: formUrlEncoded
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/x-www-form-urlencoded
+  Cookie: did=s%3Av0%3A99fc1290-176e-11ef-87b4-7dbb09938d78.gHLfEwTolWAgZmXTRF7DbU47yhCp9XtsiUSqRlfH3ZA; did_compat=s%3Av0%3A99fc1290-176e-11ef-87b4-7dbb09938d78.gHLfEwTolWAgZmXTRF7DbU47yhCp9XtsiUSqRlfH3ZA
+}
+
+body:form-urlencoded {
+  client_id: {{connectorapi_client_id}}
+  client_secret: {{connectorapi_client_secret}}
+  grant_type: client_credentials
+  audience: snet-dev/network/api
+}
+
+script:post-response {
+  test("Status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response includes access_token in environment", function () {
+      var jsonData = res.getBody();
+      bru.setGlobalEnvVar("sage_id_access_token", jsonData.access_token);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

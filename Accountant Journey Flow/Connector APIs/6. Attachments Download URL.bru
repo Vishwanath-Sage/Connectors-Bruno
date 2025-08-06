@@ -1,0 +1,24 @@
+meta {
+  name: 6. Attachments Download URL
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/attachments/{{connectorAttachmentId}}
+  body: none
+  auth: bearer
+}
+
+headers {
+  accept: application/vnd.api+json
+  x-group-key: {{networkProductInstancesTenantId}}
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik56TXdPVVJHTVVZNU5ERXpRelJHUVVNMVF6azJSa1U1UVRJMU0wRTROemhGUmpWQ04wSTNOQSJ9.eyJodHRwczovL3NhZ2UuY29tL3NjaS9pZHAiOiJDbG91ZElEIiwiaXNzIjoiaHR0cHM6Ly9pZC5zYWdlLmNvbS8iLCJzdWIiOiJhdXRoMHw4Y2RjOTFlY2MxMjI4MGYwNGUyYjc5MThlMDMxYThhYzFkMmMzM2NmZTgzMjBkNmMiLCJhdWQiOlsic25ldC1jbG91ZG9wcy9uZXR3b3JrL2FwaSIsImh0dHBzOi8vc2FnZS1jaWQtcHJvZC5zYWdlaWRwcm9kLmF1dGgwYXBwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3Mzk0NDk5NjUsImV4cCI6MTczOTQ3ODc2NSwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCIsImF6cCI6InJTaGVDYTk1eWRmRVdEOFZ0b1ZYaDR0WjhJUE5zdWFnIn0.SZhhfwA6JgRp1u0KI-f2IGD0QYtcUIYXWqO9BfRv16d5Qhu_eZPt2W8KEE7iBHFSon0lvYLcuia-OxSbDZxhJYPT5c1PH1bQyxoiy20ysSBTvvC7ih--sgOIukWcz9S9nEg08Yn6cVAy75Ll7EgQuE4a-r8KDsReDLIaAcf8fne8i0bWJG8GrJXh3PG3K_lwTWTZJQ4xFph0B2km6wYZHwjLyOSizFQeiDqQCb5tFKBlgWibMJIq5AIVN7C7DuiqvmQoLUO9iPEvcLlB-Fu0mHM1maZjuLqF_7FXeiEAmkK-iq2PNpw6WzTaqC0P8CAjgciv3lKR1gSut6OkPaWLhw
+}
+
+settings {
+  encodeUrl: true
+}

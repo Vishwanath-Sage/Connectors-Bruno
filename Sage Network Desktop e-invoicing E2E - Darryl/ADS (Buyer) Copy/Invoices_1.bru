@@ -1,0 +1,28 @@
+meta {
+  name: Invoices_1
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{ADSapi}}/Invoices
+  body: multipartForm
+  auth: inherit
+}
+
+headers {
+  X-Group-Key: {{networkProductInstancesTenantIdBuyer}}
+}
+
+body:multipart-form {
+  ublFile: @file(/C:/Users/kay.stewart-johnson/Downloads/E-invoicing/FA00019.xml)
+}
+
+script:post-response {
+  var jsonData = res.getBody();
+      bru.setEnvVar("invoiceIdBuyer", jsonData.invoiceId);
+}
+
+settings {
+  encodeUrl: true
+}

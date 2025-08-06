@@ -1,0 +1,121 @@
+meta {
+  name: Create Subscription
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/subscriptions
+  body: json
+  auth: bearer
+}
+
+headers {
+  accept: application/vnd.api+json
+  Idempotency-Key: fc5ae71a-620b-419e-a6c6-202d11902b1f
+  Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJVUXlRME0wTWtOQk5rUkJOVGxETXpaQ056VXhPVVUyUkRZNU5EbEJOVVF6T0VSQk1EQXdNQSJ9.eyJpc3MiOiJodHRwczovL2lkLXNoYWRvdy5zYWdlLmNvbS8iLCJzdWIiOiIzZ1piWE1Mak83SnZna2d1M1ZQS0VGTjRCdjVXcXI1MkBjbGllbnRzIiwiYXVkIjoic25ldC1kZXYvbmV0d29yay9hcGkiLCJpYXQiOjE3NDE2OTYxMjUsImV4cCI6MTc0MTcyNDkyNSwic2NvcGUiOiJhbGwiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMiLCJhenAiOiIzZ1piWE1Mak83SnZna2d1M1ZQS0VGTjRCdjVXcXI1MiJ9.ryfyJWzrWdIF3LhSTFcJg0vQvZdxOs2JQBg2e94kYh_kYe4yrYHWG0YHbwP0hS9_Sao30gt3KAVbD4ZJNlChF1v1vNL_gamFzZfiKGh0p3KMqW_JqLovKmuI4ys-X3eOLPmJiLAq3k67P-9Q0ccQYy914mXkhlJOLNo_jQOr-Szn4GyV2ick5sY5mj_Yn3b4sfqpCcIBBSAT7eKAtk6y_xqrsBlQibj_yBXZSXoVkc6nJZZeeQS0CNhMrYJPylkBCRBfY2b-lyqD6QLex40c-vw_G_WTqZ9oZGONCkonVx_D4cSjbrpztOcZZKBJuQOELmY68nY2mfzcMyMjC5Sbag
+  Content-Type: application/vnd.api+json
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkdoSWRxS2JCZld5UTNoeWs1Wmd3MiJ9.eyJodHRwczovL3NhZ2UuY29tL3NjaS9hemkiOiI2NTAxNmEzYmM2ZmY0NDkzMjQ5MzVkMzQyZjMxNTU4NzE4M2U2MWFjYzZiZCIsImh0dHBzOi8vc2FnZS5jb20vc2NpL2F6biI6Im9uV2luZG93c2RldmljZUdCIiwiaXNzIjoiaHR0cHM6Ly9pZC5hdXRoLXNoYWRvdy5zYWdlLmNvbS8iLCJzdWIiOiJhdXRoMHxhemlfNjUwMTZhM2JjNmZmNDQ5MzI0OTM1ZDM0MmYzMTU1ODcxODNlNjFhY2M2YmQiLCJhdWQiOlsic25ldC1kZXYvbmV0d29yay9hcGkiLCJodHRwczovL3NhZ2UtYXV0aC1zaGFkb3cuc2FnZWlkbm9ucHJvZC5hdXRoMGFwcC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzUzNzc5NjAzLCJleHAiOjE3NTM4MDg0MDMsInNjb3BlIjoib3BlbmlkIGVtYWlsIG9mZmxpbmVfYWNjZXNzIiwiZ3R5IjoicGFzc3dvcmQiLCJhenAiOiJtemVWQ09pSWlUejllZFY2OXVxdjBKOEdMQzVXR2I4RSJ9.m5XuUu-SnCraiGXmnWlm7tCEUz2Ft-8Ka7DyKeO2bbwDcwZRjOzJyrowKY0rfsxVe3WkZZuzZWklD1yNCN2aLLIYvZ3Fxfrfm9ozFrTG-4k1EmzJ1wHx4IgAOl-UhAVrGf3HHlgB0qd1WwrmAODu9WkeWsMulbOBSm112LEvDWTB3RgAQolPIMv7HhbMs2eisasQuIKM7Frnfp0JTIezDPoV3Hv2UmKDWvyL9rk9ngjNQ7iW8FeHRaKsgjBKXBvn8W7fh-UuJ4HDeJju_hibheZa777UgjVotuw3hcndeWxMQUZ2Q2XXBTR0LHu_yJ_TREVxH2Xqcb0UQ6bD3QbfPA
+}
+
+body:json {
+  {
+      "data": {
+          "type": "Subscription",
+          "attributes": {
+              "scope": {
+                  "resource": "SyncTask",
+                  "eventType": "FromErpToDistribute",
+                  "datasetId": "3e7970b1-67bf-c3ee-63df-00c4a3b099e4"
+              },
+              "data": {
+                  "feeds": [
+                      "AR Invoice"
+                  ]
+              }
+          }
+      }
+  }
+}
+
+script:post-response {
+  var jsonData = res.getBody();
+  // Test to check if the status code of the response is 201
+  test("Response status code is 201", function () {
+      expect(res.getStatus()).to.equal(201);
+  });
+  
+  // Test to check if the resource in the response is equal to 'SyncTask'
+  test("Resource in the response is 'SyncTask'", function () {
+      expect(jsonData.data.type).to.equal('SyncTask');
+  });
+  var jsonData = res.getBody();
+  
+  // Test if the eventType in the response is equal to 'FromErpToDistribute'
+  test("EventType in the response is 'FromErpToDistribute'", function () {
+      expect(jsonData.data.attributes.scope.eventType).to.equal('FromErpToDistribute');
+  });
+  var jsonData = res.getBody();
+  
+  // Test to check if datasetId in the response is not null
+  test("datasetId in the response is not null", function () {
+      expect(jsonData.data.attributes.scope.datasetId).to.not.be.null;
+  });
+  var jsonData = res.getBody();
+  
+  // Test to check if the feeds list in the response is not null
+  test("Feeds list in the response is not null", function () {
+      expect(jsonData.data.attributes.data.feeds).to.not.be.null;
+  });
+  var jsonData = res.getBody();
+  
+  
+  // Test the resource type in the response and check for additional attributes
+  test("type is 'Subscription'", function () {
+      expect(jsonData.data.type).to.equal('Subscription');
+  });
+  
+  // Test if createdAt and modifiedAt in the response contain today's date
+  test("createdAt and modifiedAt contain today's date", function () {
+      const today = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
+      expect(jsonData.meta.createdAt).to.include(today);
+      expect(jsonData.meta.modifiedAt).to.include(today);
+  });
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  Generated from cURL: curl -X 'POST' \
+    'https://connector-dev.network-eng.sage.com/connectors/erp/datasets/ca0e6732-6768-0faa-c39c-57b5d2159ea3/subscriptions' \
+    -H 'accept: application/vnd.api+json' \
+    -H 'Idempotency-Key: fc5ae71a-620b-419e-a6c6-202d11902b1f' \
+    -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJVUXlRME0wTWtOQk5rUkJOVGxETXpaQ056VXhPVVUyUkRZNU5EbEJOVVF6T0VSQk1EQXdNQSJ9.eyJpc3MiOiJodHRwczovL2lkLXNoYWRvdy5zYWdlLmNvbS8iLCJzdWIiOiIzZ1piWE1Mak83SnZna2d1M1ZQS0VGTjRCdjVXcXI1MkBjbGllbnRzIiwiYXVkIjoic25ldC1kZXYvbmV0d29yay9hcGkiLCJpYXQiOjE3NDE2OTYxMjUsImV4cCI6MTc0MTcyNDkyNSwic2NvcGUiOiJhbGwiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMiLCJhenAiOiIzZ1piWE1Mak83SnZna2d1M1ZQS0VGTjRCdjVXcXI1MiJ9.ryfyJWzrWdIF3LhSTFcJg0vQvZdxOs2JQBg2e94kYh_kYe4yrYHWG0YHbwP0hS9_Sao30gt3KAVbD4ZJNlChF1v1vNL_gamFzZfiKGh0p3KMqW_JqLovKmuI4ys-X3eOLPmJiLAq3k67P-9Q0ccQYy914mXkhlJOLNo_jQOr-Szn4GyV2ick5sY5mj_Yn3b4sfqpCcIBBSAT7eKAtk6y_xqrsBlQibj_yBXZSXoVkc6nJZZeeQS0CNhMrYJPylkBCRBfY2b-lyqD6QLex40c-vw_G_WTqZ9oZGONCkonVx_D4cSjbrpztOcZZKBJuQOELmY68nY2mfzcMyMjC5Sbag' \
+    -H 'Content-Type: application/vnd.api+json' \
+    -d '{
+    "data": {
+      "id": "string",
+      "type": "string",
+      "attributes": {
+        "scope": {
+          "resource": "string",
+          "subResource": "string"
+        },
+        "data": {
+          "feeds": [
+            "string"
+          ]
+        }
+      }
+    },
+    "meta": {
+      "createdAt": "2025-03-11T12:23:16.273Z",
+      "modifiedAt": "2025-03-11T12:23:16.273Z"
+    }
+  }'
+}

@@ -1,0 +1,56 @@
+meta {
+  name: create sync task empty
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/connectors/erp/datasets/{{dataset_id}}/sync-tasks
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+  Idempotency-Key: {{$guid}}
+}
+
+auth:bearer {
+  token: {{sage_id_access_token}}
+}
+
+body:json {
+  {
+      "data": {
+          "type": "SyncTask",
+          "attributes": {
+              "packageType": "Full"
+          }
+      }
+  }
+}
+
+script:post-response {
+  test("Status code is 201", function () {
+      expect(res.getStatus()).to.equal(201);
+  });
+  
+  test("Each element in the included array has attributes", function () {
+      res.getBody().included.forEach(function(item) {
+          expect(item).to.have.property('attributes');
+      });
+  });
+  
+  test("Response includes sync_task_id, blob_upload_url, and attachment_id in environment", function () {
+      var jsonData = res.getBody();
+      bru.setGlobalEnvVar("sync_task_id", jsonData.data.id);
+      bru.setGlobalEnvVar("blob_upload_url", jsonData.included[0].attributes.uploadUrl);
+      bru.setGlobalEnvVar("attachment_id", jsonData.data.relationships.attachment.data.id);
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}
