@@ -1,0 +1,29 @@
+meta {
+  name: VALIDATION Auth m2m
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{sageIdURL}}/oauth/token
+  body: formUrlEncoded
+  auth: none
+}
+
+body:form-urlencoded {
+  grant_type: client_credentials
+  client_id: 8JIpa0ybrPwz3moWiqUoc6EmKaVy4NZO
+  client_secret: _q9nUnj96Ppx4r1R32ut1dncJNbpfeDtW6GPBXQ-KJk1YgAjfHOMjPH-deBFAjdy
+  audience: snet-dev/network/api
+  ~scope: view:Companies
+}
+
+script:post-response {
+  let jsonData = res.getBody();
+  var accessToken = jsonData.access_token;
+  bru.setEnvVar("m2mjwt", accessToken);
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Sage Network Desktop e-invoicing E2E new onboarding",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

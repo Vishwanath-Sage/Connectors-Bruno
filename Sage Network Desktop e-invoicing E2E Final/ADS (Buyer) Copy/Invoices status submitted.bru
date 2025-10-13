@@ -1,0 +1,25 @@
+meta {
+  name: Invoices status submitted
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{ADSapi}}/Invoices/{{invoiceIdBuyer}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  X-Group-Key: {{networkProductInstancesTenantIdBuyer}}
+}
+
+body:json {
+  {
+      "workflowStatusId": "00000000-0000-0000-0000-300000000000"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

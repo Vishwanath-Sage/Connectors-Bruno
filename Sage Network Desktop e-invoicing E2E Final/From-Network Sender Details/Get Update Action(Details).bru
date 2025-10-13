@@ -1,0 +1,166 @@
+meta {
+  name: Get Update Action(Details)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{sageNetworkBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantIdSeller}}/sync-tasks/{{SellerSyncTaskId}}?include=Details
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: Details
+}
+
+headers {
+  accept: application/vnd.api+json
+}
+
+script:post-response {
+  var responseJSON = res.getBody();
+  
+  // Test to check if the status is 'Processing'
+  test("Status is equal to 'Processing'", function () {
+      expect(responseJSON.data.attributes.status).to.equal('Processing');
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if the status is 'Processing'
+  test("Status is equal to 'Processing'", function () {
+      expect(responseJSON.data.attributes.status).to.equal('Processing');
+  });
+  
+  // Test to check if the operationType is equal to 'FromNetwork'
+  test("Operation type is equal to 'FromNetwork'", function () {
+      expect(responseJSON.data.attributes.operationType).to.equal('FromNetwork');
+  });
+  var responseJSON = res.getBody();
+  
+  // Test if the message in the response is as expected
+  test("Message is equal to 'Sync-Task request has been crea'", function () {
+      expect(responseJSON.data.attributes.message).to.equal('Sync-Task request has been created');
+  });
+  var responseJSON = res.getBody();
+  
+  // Test if the packageType is either 'Full' or 'Partial'
+  test("Package type is either 'Full' or 'Partial'", function () {
+      expect(['Full', 'Partial']).to.include(responseJSON.data.attributes.packageType);
+  });
+  var responseJSON = res.getBody();
+  
+  // Combine tests for response attributes
+  test("stepName = Syncing", function () {
+     // Check if the stepName is equal to 'Syncing'
+      expect(responseJSON.data.attributes.stepName).to.equal('Syncing');
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if the datasetId is not null
+  test("Dataset ID is not null", function () {
+      expect(responseJSON.data.attributes.datasetId).to.not.be.null;
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if the processStartDate contains today's date
+  test("Process start date is today's date", function () {
+     
+  const moment = require('moment'); 
+      const today = moment().format('YYYY-MM-DD');
+      const rawDate = responseJSON.data.attributes.processStartDate;
+      const processStartDate = moment(rawDate, 'M/D/YYYY h:mm:ss A').format('YYYY-MM-DD');
+      expect(processStartDate).to.equal(today);
+  
+  });
+  var responseJSON = res.getBody();
+  
+  // Combine tests for response attributes and add attempts check
+  test("Response contains valid attributes and attempts is equal to 1", function () {    
+      // Check if attempts is equal to 1
+      expect(responseJSON.data.attributes.attempts).to.equal(1);
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if relationships.invoices.data.id is not null
+  test("Invoices data ID is not null", function () {
+      responseJSON.data.relationships.invoices.data.forEach(function(invoice) {
+          expect(invoice.id).to.not.be.null;
+      });
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if relationships.invoices.data.type is equal to 'Invoice'
+  test("Each invoice data type is equal to 'Invoice'", function () {
+      responseJSON.data.relationships.invoices.data.forEach(function(invoice) {
+          expect(invoice.type).to.equal('Invoice');
+      });
+  });
+  var responseJSON = res.getBody();
+  
+  // Check if each included object type is equal to 'Invoice'
+  test("Each included type is equal to 'Invoice'", function () {
+      responseJSON.included.forEach(function(includedItem) {
+          expect(includedItem.type).to.equal('Invoice');
+      });
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if attributes.action is equal to 'Update'
+  test("Attributes action is equal to 'Update'", function () {
+      expect(responseJSON.included[0].attributes.action).to.equal('Update');
+  });
+  
+  // Combine tests for response attributes
+  test("Response contains valid attributes and checks", function () {
+      // Check if attempts is equal to 1
+      expect(responseJSON.data.attributes.attempts).to.equal(1);
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if isEInvoice is equal to true in included items
+  test("isEInvoice is equal to true", function () {
+      responseJSON.included.forEach(function(includedItem) {
+          expect(includedItem.attributes.isEInvoice).to.equal(true);
+      });
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if erpKey in included items is not null
+  test("erpKey in included items is not null", function () {
+      responseJSON.included.forEach(function(includedItem) {
+          expect(includedItem.attributes.erpKey).to.not.be.null;
+      });
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if both old and new fields of workflowStatusId in the response are not null
+  test("Both old and new fields of workflowStatusId are not null", function () {
+      expect(responseJSON.included[0].attributes.updates.workflowStatusId.old).to.not.be.null;
+      expect(responseJSON.included[0].attributes.updates.workflowStatusId.new).to.not.be.null;
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if meta.objectType is equal to 'Invoice'
+  test("Meta objectType is equal to 'Invoice'", function () {
+      expect(responseJSON.meta.objectType).to.equal('Invoice');
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if meta.action is equal to 'Update'
+  test("Meta action is equal to 'Update'", function () {
+      expect(responseJSON.meta.action).to.equal('Update');
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if modifiedAt contains today's date
+  test("modifiedAt contains today's date", function () {
+      const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+      const modifiedAtDate = responseJSON.meta.modifiedAt.split('T')[0]; // Extract date part
+      expect(modifiedAtDate).to.equal(today);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

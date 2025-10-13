@@ -1,0 +1,57 @@
+meta {
+  name: 3. PDF Attachment Download API Copy
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{sageNetworkBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantIdBuyer}}/attachments/{{PDFAttachmentId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  accept: application/vnd.api+json
+  Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJVUXlRME0wTWtOQk5rUkJOVGxETXpaQ056VXhPVVUyUkRZNU5EbEJOVVF6T0VSQk1EQXdNQSJ9.eyJodHRwczovL3NhZ2UuY29tL3NjaS9pZHAiOiJDbG91ZElEIiwiaXNzIjoiaHR0cHM6Ly9pZC1zaGFkb3cuc2FnZS5jb20vIiwic3ViIjoiYXV0aDB8MGIzNTMwOTYwMzNmOWZkMjYyOGZjOTk3OWJiZDVlYzAzYzBjZDgzOGYwNmYwNzBhIiwiYXVkIjpbInNuZXQtZGV2L25ldHdvcmsvYXBpIiwiaHR0cHM6Ly9zYWdlLWNpZC1zaGFkb3cuc2FnZWlkbm9ucHJvZC5hdXRoMGFwcC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzQ1Mzk0MDE3LCJleHAiOjE3NDU0MjI4MTcsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJhenAiOiJmN1Jua084VmFIWmFwcWJqRjVOaWRjSTg4MGM5SXZ1QyJ9.ivHvU6_aJrCVnKkjY7jlqT2tlqVFLFJ_wQAgpgewtTfCwnrE6V72W-KPfDeucRP9Zy7HavOmaY4VAhfhG-wVPpz39h7nTbBIpgAIWQ4_rRPBjvOq39kWDggUc4KHVBEXv1tdy--5GMqNaoOALbxYDeb0Lkxa9jpNzakSItzz2EqwnFzJRX_4xpI03gXEeWdx8nt-v2LOo76XZ2My3QjZqup2Cv8bpwJ58aDqM4gIvUQUgE-0iuogbLV0REVn4Lb1Zx0MQYXS7P2A61JpGIeNuneY5Sz13YrIawzReH8viCSN9jKG7PWKNiFII4nffuWX6b1N3kL-uLSNe6QAROPs8Q
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("Id is not null and has a size of 36 bits", function () {
+    var responseJSON = res.getBody();
+    expect(responseJSON.id).to.not.be.null;
+    expect(responseJSON.id).to.be.a('string').and.to.have.lengthOf(36);
+  });
+  var responseJSON = res.getBody();
+  test("Attributes contain downloadUrl starting with 'https://'", function () {
+    var attributes = responseJSON.attributes;
+    expect(attributes).to.have.property('downloadUrl').that.is.a('string').and.to.include('https');
+  });
+  test("FileName is not blank and has a size of 36 bits", function () {
+      var responseJSON = res.getBody();
+      expect(responseJSON.attributes.fileName).to.not.be.empty;
+      expect(responseJSON.attributes.fileName.length).to.be.equal(36);
+  });
+  // Test to check that the 'fileExtension' is '.xml'
+  test("File extension is '.pdf'", function () {
+      var responseJSON = res.getBody();
+      expect(responseJSON.attributes.fileExtension).to.equal('.pdf');
+  });
+  test("Attachment type is 'ObjectPDF'", function () {
+      var responseJSON = res.getBody();
+      expect(responseJSON.attributes.attachmentType).to.equal('ObjectPDF');
+  });
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  Generated from cURL: curl -X 'GET' \
+    'https://connector-qa.network-eng.sage.com/connectors/erp/datasets/88d42794-af05-ca68-c596-d25d5cc748bd/attachments/6fc496aa-f278-4ebd-b46a-9ac8b1ce1a28' \
+    -H 'accept: application/vnd.api+json' \
+    -H 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJVUXlRME0wTWtOQk5rUkJOVGxETXpaQ056VXhPVVUyUkRZNU5EbEJOVVF6T0VSQk1EQXdNQSJ9.eyJodHRwczovL3NhZ2UuY29tL3NjaS9pZHAiOiJDbG91ZElEIiwiaXNzIjoiaHR0cHM6Ly9pZC1zaGFkb3cuc2FnZS5jb20vIiwic3ViIjoiYXV0aDB8MGIzNTMwOTYwMzNmOWZkMjYyOGZjOTk3OWJiZDVlYzAzYzBjZDgzOGYwNmYwNzBhIiwiYXVkIjpbInNuZXQtZGV2L25ldHdvcmsvYXBpIiwiaHR0cHM6Ly9zYWdlLWNpZC1zaGFkb3cuc2FnZWlkbm9ucHJvZC5hdXRoMGFwcC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzQ1Mzk0MDE3LCJleHAiOjE3NDU0MjI4MTcsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJhenAiOiJmN1Jua084VmFIWmFwcWJqRjVOaWRjSTg4MGM5SXZ1QyJ9.ivHvU6_aJrCVnKkjY7jlqT2tlqVFLFJ_wQAgpgewtTfCwnrE6V72W-KPfDeucRP9Zy7HavOmaY4VAhfhG-wVPpz39h7nTbBIpgAIWQ4_rRPBjvOq39kWDggUc4KHVBEXv1tdy--5GMqNaoOALbxYDeb0Lkxa9jpNzakSItzz2EqwnFzJRX_4xpI03gXEeWdx8nt-v2LOo76XZ2My3QjZqup2Cv8bpwJ58aDqM4gIvUQUgE-0iuogbLV0REVn4Lb1Zx0MQYXS7P2A61JpGIeNuneY5Sz13YrIawzReH8viCSN9jKG7PWKNiFII4nffuWX6b1N3kL-uLSNe6QAROPs8Q'
+}

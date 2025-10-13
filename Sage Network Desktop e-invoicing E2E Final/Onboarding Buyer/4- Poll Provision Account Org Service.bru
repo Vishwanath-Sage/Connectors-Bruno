@@ -1,0 +1,52 @@
+meta {
+  name: 4- Poll Provision Account Org Service
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{OrgServiceURL}}/v3/provision/account?PendingProductInstances=false
+  body: json
+  auth: none
+}
+
+params:query {
+  PendingProductInstances: false
+}
+
+headers {
+  X-Idempotency-Key: {{provisionAccountIdempotency4}}
+  Authorization: Bearer {{jwtCloudId}}
+}
+
+body:json {
+  {
+      "User": {
+          "Email": "{{provisionAccountEmailBuyer}}",
+          "Locale": "fr-FR",
+          "UserAuths": [{
+              "PrincipalId":"{{LoggedInUserAuth0PrincipalIdbuyer}}",
+              "ProviderId":"{{LoggedInUserAuth0PrincipalIdbuyer}}",
+              "ProviderType":"CloudID"
+          }]
+      },
+      "Account": {
+          "ExternalId": "{{provisionAccountEmailBuyer}}",
+          "ExternalSource": "Postman Provisioner"
+      }
+  }
+}
+
+script:post-response {
+  const jsonData = res.getBody();
+  
+  if (!jsonData.errors) {
+    // Save variables to use later in this collection run
+    bru.setVar("accountIdBuyer", jsonData.AccountId);
+    bru.setVar("UserIdBuyer", jsonData.UserId);
+  }
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,78 @@
+meta {
+  name: Regression-Testing
+}
+
+auth {
+  mode: none
+}
+
+vars:pre-request {
+  sync_task_id: 
+  Attachments_insertCount: 
+  Attachments_updateCount: 
+  BaseCurrency_insertCount: 
+  BaseCurrency_updateCount: 
+  Company_insertCount: 
+  Company_updateCount: 
+  Contact_insertCount: 
+  Contact_updateCount: 
+  FinancialAccount_insertCount: 
+  FinancialAccount_updateCount: 
+  FinancialAccountBalanceHistory_insertCount: 
+  FinancialAccountBalanceHistory_updateCount: 
+  FinancialYearSetting_insertCount: 
+  FinancialYearSetting_updateCount: 
+  Invoice_insertCount: 
+  Invoice_updateCount: 
+  InvoiceLine_insertCount: 
+  InvoiceLine_updateCount: 
+  Payment_insertCount: 
+  Payment_updateCount: 
+  PaymentApplied_insertCount: 
+  PaymentApplied_updateCount: 
+}
+
+docs {
+  ## 👋 Introduction
+  
+  This workspace is designed to provide information on each of the API flows required for integrating into the Sage Network. This collection should come with an associated environment file which contains the variables required.
+  
+  ## 📮 Postman collection
+  
+  **This Postman collection contains 4 folders:**
+  
+  | Folder | Description |
+  | --- | --- |
+  | Onboarding | Obtain access token from Sage ID, provision account and onboard to Sage Network |
+  | Validation | These steps can be ran to validate records in Organisation and Sage Network Account service, but do not need to be implemented by integrating product teams. |
+  | Sync using ZIP file | All sync steps when uploading data in a zip file. |
+  | Sync using JSON | All sync steps when uploading data as a json payload |
+  
+  ## 🌱 Environment
+  
+  This Postman also has an associated environment file. This will need to be imported into postman and selected at the top right.
+  
+  <img src="https://content.pstmn.io/0f500525-aa28-43b8-8287-f09d569dbffd/aW1hZ2UucG5n" width="1488" height="142">
+  
+  ## 🛠️ Variables
+  
+  To use this collection, you will need to set some variables:
+  
+  - `connectorBaseUrl`: base URL of the Sage Network Connector endpoints.
+      
+  - `sageIdURL`: The base URL for the Sage ID endpoints in which user tokens will be generated.
+      
+  - `client_id`: The client ID generated for your application to be used for user Sage ID authorisation. Often generated from within the manage Sage ID portal.
+      
+  - `client_secret`: The client Secret generated for your application to be used for user Sage ID authorisation. Often generated from within the manage Sage ID portal.
+      
+  - `sageIdAuthURL`: The base URL for the Sage Network authentication layer on top of Sage ID.
+      
+  - `auth_client_id`: The client ID generated for your application to be used for Sage Network authorisation. Get in touch with your enabelment contact for generation.
+      
+  - `connectedBridgeURL`: The base URL for provisioning network accounts.
+      
+  - `organisationServiceURL`: The base URL for organisation service. To be used for validation steps only.
+      
+  - `nasUrl`: The base URL for Network Account service. To be used for validation steps only.
+}

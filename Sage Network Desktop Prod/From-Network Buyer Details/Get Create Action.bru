@@ -1,0 +1,189 @@
+meta {
+  name: Get Create Action
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{sageNetworkBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantIdBuyer}}/sync-tasks/{{BuyerSyncTaskId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  accept: application/vnd.api+json
+  Authorization: Bearer {{m2m_jwt_connector}}
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  var responseJSON = res.getBody();
+  
+  // Test to check response status is not null
+  test("Response status is not null", function () {
+      expect(responseJSON.data.attributes.status).to.not.be.null;
+  });
+  
+  // Test to check that operationType is equal to 'FromNetwork'
+  test("Operation type is equal to 'FromNetwork'", function () {
+      expect(responseJSON.data.attributes.operationType).to.equal('FromNetwork');
+  });
+  
+  // New test to check that the message is not null
+  test("Response message is not null", function () {
+      expect(responseJSON.data.attributes.message).to.not.be.null;
+  });
+  
+  // New test to check that the stepName is not null
+  test("Response stepName is not null", function () {
+      expect(responseJSON.data.attributes.stepName).to.not.be.null;
+  });
+  
+  // Test packageType can be one of ['Full', 'Partial']
+  test("Package type is valid", function () {
+      const validPackageTypes = ['Full', 'Partial'];
+      expect(validPackageTypes).to.include(responseJSON.data.attributes.packageType);
+  });
+  
+  test("Dataset ID has a size of 36 characters", function () {
+      expect(responseJSON.data.attributes.datasetId).to.have.lengthOf(36);
+  });
+  
+  // New test to check that attempts is equal to 1
+  test("Attempts is equal to 1", function () {
+      expect(responseJSON.data.attributes.attempts).to.equal(1);
+  });
+  var responseJSON = res.getBody();
+  
+  // Test the response status code
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  // Test response attributes existence and validity
+  test("Response attributes are valid", function () {
+      expect(responseJSON.data).to.have.property('attributes');
+      expect(responseJSON.data.attributes).to.include.keys('status', 'operationType', 'message', 'packageType', 'stepName', 'datasetId', 'processStartDate', 'attempts');
+      expect(responseJSON.meta).to.include.keys('objectType', 'action', 'createdAt', 'modifiedAt');
+  });
+  
+  // Validate attributes values
+  test("Attributes values are valid", function () {
+      expect(responseJSON.data.attributes.status).to.not.be.null;
+      expect(responseJSON.data.attributes.operationType).to.equal('FromNetwork');
+      expect(responseJSON.data.attributes.message).to.not.be.null;
+      expect(responseJSON.data.attributes.stepName).to.not.be.null;
+  
+      const validPackageTypes = ['Full', 'Partial'];
+      expect(validPackageTypes).to.include(responseJSON.data.attributes.packageType);
+      
+      expect(responseJSON.data.attributes.datasetId).to.have.lengthOf(36);
+      expect(responseJSON.data.attributes.attempts).to.equal(1);
+      
+      // New test for id length
+      expect(responseJSON.data.id).to.have.lengthOf(36);
+  });
+  var responseJSON = res.getBody();
+  
+  // Test the response status code
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  // Test response attributes existence and validity
+  test("Response attributes are valid", function () {
+      expect(responseJSON.data).to.have.property('attributes');
+      expect(responseJSON.data.attributes).to.include.keys('status', 'operationType', 'message', 'packageType', 'stepName', 'datasetId', 'processStartDate', 'attempts');
+      expect(responseJSON.meta).to.include.keys('objectType', 'action', 'createdAt', 'modifiedAt');
+  });
+  
+  // Validate attributes values
+  test("Attributes values are valid", function () {
+      expect(responseJSON.data.attributes.status).to.not.be.null;
+      expect(responseJSON.data.attributes.operationType).to.equal('FromNetwork');
+      expect(responseJSON.data.attributes.message).to.not.be.null;
+      expect(responseJSON.data.attributes.stepName).to.not.be.null;
+  
+      const validPackageTypes = ['Full', 'Partial'];
+      expect(validPackageTypes).to.include(responseJSON.data.attributes.packageType);
+      
+      expect(responseJSON.data.attributes.datasetId).to.have.lengthOf(36);
+      expect(responseJSON.data.attributes.attempts).to.equal(1);
+      expect(responseJSON.data.id).to.have.lengthOf(36);
+  });
+  
+  // New test to check that the response meta.objectType is equal to 'Invoice'
+  test("Meta objectType is equal to 'Invoice'", function () {
+      expect(responseJSON.meta.objectType).to.equal('Invoice');
+  });
+  var responseJSON = res.getBody();
+  
+  // Test the response status code
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  // Test response attributes existence and validity
+  test("Response attributes are valid", function () {
+      expect(responseJSON.data).to.have.property('attributes');
+      expect(responseJSON.data.attributes).to.include.keys('status', 'operationType', 'message', 'packageType', 'stepName', 'datasetId', 'processStartDate', 'attempts');
+      expect(responseJSON.meta).to.include.keys('objectType', 'action', 'createdAt', 'modifiedAt');
+  });
+  
+  // Validate attributes values
+  test("Attributes values are valid", function () {
+      expect(responseJSON.data.attributes.status).to.not.be.null;
+      expect(responseJSON.data.attributes.operationType).to.equal('FromNetwork');
+      expect(responseJSON.data.attributes.message).to.not.be.null;
+      expect(responseJSON.data.attributes.stepName).to.not.be.null;
+  
+      const validPackageTypes = ['Full', 'Partial'];
+      expect(validPackageTypes).to.include(responseJSON.data.attributes.packageType);
+      
+      expect(responseJSON.data.attributes.datasetId).to.have.lengthOf(36);
+      expect(responseJSON.data.attributes.attempts).to.equal(1);
+      expect(responseJSON.data.id).to.have.lengthOf(36);
+  });
+  
+  // New test to check that the response meta.action is equal to 'Create'
+  test("Meta action is equal to 'Create'", function () {
+      expect(responseJSON.meta.action).to.equal('Create');
+  });
+  
+  test("CreatedAt should not be blank", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.meta).to.exist;
+      expect(responseData.meta.createdAt).to.exist.and.to.have.lengthOf.at.least(1, "CreatedAt should not be empty");
+  });
+  
+  
+  test("ModifiedAt should not be blank", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.meta).to.exist;
+      expect(responseData.meta.modifiedAt).to.exist.and.to.have.lengthOf.at.least(1, "ModifiedAt should not be empty");
+  });
+  
+  
+  test("CreatedAt is less than or equal to ModifiedAt", function () {
+      const responseData = res.getBody();
+      
+      expect(responseData).to.be.an('object');
+      expect(responseData.meta.createdAt).to.exist;
+      expect(responseData.meta.modifiedAt).to.exist;
+      
+      expect(new Date(responseData.meta.createdAt)).to.be.at.most(new Date(responseData.meta.modifiedAt), "CreatedAt should be less than or equal to ModifiedAt");
+  });
+  
+  
+}
+
+settings {
+  encodeUrl: true
+}

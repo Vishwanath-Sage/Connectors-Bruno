@@ -1,0 +1,70 @@
+meta {
+  name: Get Update Action
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{sageNetworkBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantIdSeller}}/sync-tasks/{{SellerSyncTaskId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  accept: application/vnd.api+json
+}
+
+script:post-response {
+  var responseJSON = res.getBody();
+  
+  // Test to check if the status is 'Processing'
+  test("Response status is equal to 'Processing'", function () {
+      expect(responseJSON.data.attributes.status).to.equal('Processing');
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if the response operationType is equal to 'FromNetwork'
+  test("Response operationType is equal to 'FromNetwork'", function () {
+      expect(responseJSON.data.attributes.operationType).to.equal('FromNetwork');
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if the response objectType is equal to 'Invoice'
+  test("Response objectType is equal to 'Invoice'", function () {
+      expect(responseJSON.meta.objectType).to.equal('Invoice');
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if the response meta action is equal to 'Update'
+  test("Response meta action is equal to 'Update'", function () {
+      expect(responseJSON.meta.action).to.equal('Update');
+  });
+  
+  // Combine existing tests for better structure
+  test("Response structure is valid", function () {
+      expect(responseJSON).to.have.property('data');
+      expect(responseJSON).to.have.property('meta');
+      expect(responseJSON.data).to.have.property('attributes');
+      expect(responseJSON.data.attributes).to.have.all.keys('status', 'operationType', 'message', 'packageType', 'stepName', 'datasetId', 'processStartDate', 'attempts');
+  });
+  var responseJSON = res.getBody();
+  
+  // Test to check if createdAt and modifiedAt fields contain today's date
+  test("Response createdAt and modifiedAt fields contain today's date", function () {
+      var today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+      expect(responseJSON.meta.createdAt).to.include(today);
+      expect(responseJSON.meta.modifiedAt).to.include(today);
+  });
+  
+  // Combine existing tests for better structure
+  test("Response structure is valid", function () {
+      expect(responseJSON).to.have.property('data');
+      expect(responseJSON).to.have.property('meta');
+      expect(responseJSON.data).to.have.property('attributes');
+      expect(responseJSON.data.attributes).to.have.all.keys('status', 'operationType', 'message', 'packageType', 'stepName', 'datasetId', 'processStartDate', 'attempts');
+  });
+}
+
+settings {
+  encodeUrl: true
+}

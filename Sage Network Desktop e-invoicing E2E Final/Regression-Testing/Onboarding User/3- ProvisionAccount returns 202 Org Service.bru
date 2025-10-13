@@ -1,0 +1,136 @@
+meta {
+  name: 3- ProvisionAccount returns 202 Org Service
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{OrgServiceURL}}/v3/provision/account?PendingProductInstances=false
+  body: json
+  auth: none
+}
+
+params:query {
+  PendingProductInstances: false
+}
+
+headers {
+  X-Idempotency-Key: {{provisionAccountIdempotency}}
+  Authorization: Bearer {{jwtCloudId}}
+}
+
+body:json {
+  {
+      "User": {
+          "Email": "{{provisionAccountEmail}}",
+          "Locale": "fr-FR",
+          "UserAuths": [{
+              "PrincipalId":"{{LoggedInUserAuth0PrincipalId}}",
+              "ProviderId":"{{LoggedInUserAuth0PrincipalId}}",
+              "ProviderType":"CloudID"
+          }]
+      },
+      "Account": {
+          "ExternalId": "{{provisionAccountEmail}}",
+          "ExternalSource": "Postman Provisioner"
+      }
+  }
+}
+
+script:pre-request {
+  // Generate random UUID for header X-Idempotency-Key
+  var uuid = require('uuid'); var randomUUID = uuid.v4();
+  bru.setEnvVar("provisionAccountIdempotency", randomUUID);
+   
+  // Generate random UUID for body BackOfficeId
+  var uuid = require('uuid'); var randomUUID = uuid.v4()
+  bru.setEnvVar("provisionAccountBackOfficeId", randomUUID);
+   
+  // Generate random UUID for body ExternalId
+  var uuid = require('uuid'); var randomUUID = uuid.v4();
+  bru.setEnvVar("provisionAccountExternalId", randomUUID);
+   
+  // account name
+  bru.setEnvVar("provisionAccountName", bru.interpolate('{{$randomCompanyName}}'));
+   
+  // create ManagingAccountId without Lodash
+  function randomString(minValue, maxValue, dataSet = 'abcdefghijklmnopqrstuvwxyz0123456789') {
+    // if no minValue passed, default both to 50
+    if (typeof minValue !== 'number') {
+      minValue = 50;
+      maxValue = 50;
+    }
+    // if only minValue is a number, make maxValue = minValue
+    else if (typeof maxValue !== 'number') {
+      maxValue = minValue;
+    }
+   
+    // pick a random integer between minValue and maxValue (inclusive)
+    const length = Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
+   
+    // build the random string
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += dataSet.charAt(Math.floor(Math.random() * dataSet.length));
+    }
+    return result;
+  }
+   
+  // set it in Bruno’s environment so you can use {{provisionAccountManagingAccountId}}
+  bru.setEnvVar(
+    'provisionAccountManagingAccountId',
+    randomString()  // defaults to 50 chars if you don’t pass args
+  );
+   
+  // create SubscriptionId without Lodash
+  function randomString(minValue, maxValue, dataSet = 'abcdefghijklmnopqrstuvwxyz0123456789') {
+    // default to length 50 if nothing passed
+    if (typeof minValue !== 'number') {
+      minValue = 50;
+      maxValue = 50;
+    }
+    // if only min passed, make max = min
+    else if (typeof maxValue !== 'number') {
+      maxValue = minValue;
+    }
+   
+    // pick a random integer between minValue and maxValue (inclusive)
+    const length = Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
+   
+    // build the string
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += dataSet.charAt(Math.floor(Math.random() * dataSet.length));
+    }
+    return result;
+  }
+   
+  // set it into Bruno’s environment
+  bru.setEnvVar(
+    'provisionAccountSubscriptionId',
+    randomString()  // will default to 50 chars if you don’t pass args
+  );
+  // Prefer Node crypto if available
+  try {
+    const { randomUUID } = require("crypto");
+    bru.setVar("idempotencyKey", randomUUID());
+  } catch {
+    // Fallback manual UUID-like generator
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    }
+    const uuid = `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+    bru.setVar("idempotencyKey", uuid);
+  }
+}
+
+script:post-response {
+  test("OK", function () {
+      expect(res.getStatus()).to.equal(202);
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

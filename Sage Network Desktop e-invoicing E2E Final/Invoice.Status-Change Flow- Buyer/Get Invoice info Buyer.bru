@@ -1,0 +1,37 @@
+meta {
+  name: Get Invoice info Buyer
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{sageNetworkBaseUrl}}/api/v1/Invoices/query?order=modified desc
+  body: none
+  auth: inherit
+}
+
+params:query {
+  order: modified desc
+}
+
+headers {
+  accept: application/vnd.api+json
+  X-Group-Key: {{networkProductInstancesTenantIdBuyer}}
+  Authorization: Bearer {{m2m_jwt_connector}}
+}
+
+script:post-response {
+  test("Status code 200", function() {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Save BUYER invoiceId", function () {
+      var jsonData = res.getBody();
+      bru.setEnvVar("Buyer_invoiceId", jsonData.records[0].invoiceId);
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

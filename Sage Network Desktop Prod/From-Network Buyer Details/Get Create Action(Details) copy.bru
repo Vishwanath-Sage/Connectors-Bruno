@@ -1,0 +1,40 @@
+meta {
+  name: Get Create Action(Details) copy
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{sageNetworkBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantIdBuyer}}/sync-tasks?skip=0&take=20&filter=operationType eq 'fromNetwork' and createdAt gt 2025-08-05T09:14:57.0930982Z
+  body: none
+  auth: inherit
+}
+
+params:query {
+  skip: 0
+  take: 20
+  filter: operationType eq 'fromNetwork' and createdAt gt 2025-08-05T09:14:57.0930982Z
+}
+
+headers {
+  accept: application/vnd.api+json
+  Authorization: Bearer {{m2m_jwt_connector}}
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  // var responseJSON = res.getBody();
+  
+  // bru.setEnvVar("XMLAttachmentId", responseJSON.included[0].relationships.attachments.data[0].id);
+  
+  // bru.setEnvVar("PDFAttachmentId", responseJSON.included[0].relationships.attachments.data[1].id);
+  
+  
+}
+
+settings {
+  encodeUrl: false
+}

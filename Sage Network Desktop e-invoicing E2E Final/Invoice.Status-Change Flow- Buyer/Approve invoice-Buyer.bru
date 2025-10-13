@@ -1,0 +1,35 @@
+meta {
+  name: Approve invoice-Buyer
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{sageNetworkBaseUrl}}/api/v1/Invoices/{{Buyer_invoiceId}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  accept: application/vnd.api+json
+  X-Group-Key: {{networkProductInstancesTenantIdBuyer}}
+  Authorization: Bearer {{m2m_jwt_connector}}
+}
+
+body:json {
+  {
+          "workflowStatusId": "00000000-0000-0000-0000-500000000000"
+  }
+  
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

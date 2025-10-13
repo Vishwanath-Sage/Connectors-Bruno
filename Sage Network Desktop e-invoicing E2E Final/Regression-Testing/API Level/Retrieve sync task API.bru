@@ -1,0 +1,207 @@
+meta {
+  name: Retrieve sync task API
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks/{{connectorSyncTaskId}}?include=Details
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: Details
+}
+
+headers {
+  Accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Check for 'Completed' status", function () {
+  
+  var jsonData = res.getBody();
+    console.log(1);
+  const targetStatus = "Completed";
+  //const responseStatus = jsonData.data.attributes.status;
+  const responseStatus = jsonData.data.attributes.status;
+  const maxRetries = 40;
+  const retryInterval = 60000;
+    
+    
+  function sleep(ms) {
+    const start = Date.now();
+    while (Date.now() - start < ms) {}
+  }
+  
+  if (responseStatus != targetStatus) {
+    console.log(2);
+      if (bru.getEnvVar("retryCount") == undefined) {
+          bru.setEnvVar("retryCount", 0);
+        sleep(retryInterval);
+        bru.setNextRequest(req.getName());
+        console.log(3);
+      } else {
+          const retryCount = parseInt(bru.getEnvVar("retryCount"));
+          bru.setEnvVar("retryCount", (retryCount + 1));
+          if (retryCount < maxRetries) {
+            console.log(4);
+                 sleep(retryInterval);
+                bru.setNextRequest(req.getName());
+            
+          } else {
+              console.log("Max retries reached. Target status not reached.");
+            console.log(5);
+              bru.deleteEnvVar("retryCount");
+  //  //           pm.execution.setNextRequest(null);
+          }
+      }
+  }
+          var responseData = res.getBody();
+           expect(targetStatus).to.equal(responseData.data.attributes.status);
+  });
+  
+  
+  
+  var jsonData = res.getBody();
+  
+  // Test for the operationType in the response
+  test("Operation type is equal to 'ToNetwork'", function () {
+      expect(jsonData.data.attributes.operationType).to.equal('ToNetwork');
+  });
+  //var jsonData = res.getBody();
+  var jsonData = res.getBody();
+  
+  // Test for the packageType in the response
+  test("Package type is equal to 'Full'", function () {
+      expect(jsonData.data.attributes.packageType).to.equal('Full');
+  });
+  var jsonData = res.getBody();
+  
+  // Test for the stepName in the response
+  test("Step name is equal to 'Finalized'", function () {
+      expect('Finalized').to.equal(jsonData.data.attributes.stepName);
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for datasetId
+  test("Dataset ID is not null and has size of 36 bits", function () {
+      expect(jsonData.data.attributes.datasetId).to.not.be.null;
+      expect(jsonData.data.attributes.datasetId).to.have.lengthOf(36);
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for attempts and summary fields
+  test("Attempts is equal to 1", function () {
+      expect(jsonData.data.attributes.attempts).to.equal(1); 
+  });
+  var jsonData = res.getBody();
+  
+  // Test for totalCompanies in the summary
+  test("Total companies in summary is equal to 2000", function () {
+       expect(2000).to.equal(jsonData.data.attributes.summary.totalCompanies);
+  });
+  var jsonData = res.getBody();
+  
+  // Test for totalContacts in the summary
+  test("Total contacts in summary is equal to 2000", function () {
+       expect(2000).to.equal(jsonData.data.attributes.summary.totalContacts);
+  });
+  var jsonData = res.getBody();
+  var today = new Date();
+  var day = String(today.getDate()).padStart(2, '0');
+  var month = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+  var year = today.getFullYear();
+  var formattedDate = day + '/' + month + '/' + year;
+  
+  // Test for processStartDate and processEndDate format
+  test("Process start date and end date are today's date in the format d/m/yyyy", function () {
+      expect(jsonData.data.attributes.processStartDate).to.include(year);
+      expect(jsonData.data.attributes.processEndDate).to.include(year);
+      console.log(formattedDate);
+  });
+  var jsonData = res.getBody();
+  
+  // Test for the message in the response
+  test("Message is equal to 'Sync is completed'", function () {
+       expect('4,000 inserted, 1 updated, 0 deleted, 0 skipped, 0 errors, 0 warnings').to.equal(jsonData.data.attributes.message);
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for id
+  test("ID is not null and has size of 36 bits", function () {
+      expect(jsonData.data.id).to.not.be.null;
+      expect(jsonData.data.id).to.have.lengthOf(36);
+  });
+  var jsonData = res.getBody();
+  
+  // Test for the type in the response
+  test("Type is equal to 'SyncTask'", function () {
+      expect(jsonData.data.type).to.equal('SyncTask');
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for Company updateCount in the report
+  test("Company updateCount is equal to 2000", function () {
+       expect(2000).to.equal(jsonData.included[0].attributes.report.Company.insertCount);
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for status properties
+  test("Status subject is 'Accounting Data', statusDetails is 'Processing', and message contains 'Sync started'", function () {
+      const status = jsonData.meta.status[0];
+      expect(status.subject).to.equal('Accounting Data');
+      expect(status.statusDetails).to.equal('Processing');
+      expect(jsonData.meta.status[0].message).to.include('Sync started in subject Accounting Data');
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for status[1] properties
+  test("Status[1] subject is 'Accounting Data', statusDetails is 'Completed', and message includes '4,000 updated'", function () {
+      const status = jsonData.meta.status[1];
+      expect(status.subject).to.equal('Accounting Data');
+      expect(status.statusDetails).to.equal('Completed');
+      expect(status.message).to.include('4,000');
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for objectType
+  test("Object type is equal to 'syncs'", function () {
+      expect(jsonData.meta.objectType).to.equal('syncs');
+  });
+  var jsonData = res.getBody();
+  var today = new Date();
+  var day = String(today.getDate()).padStart(2, '0');
+  var month = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+  var year = today.getFullYear();
+  var formattedDate = day + '/' + month + '/' + year;
+  
+  // Combined test to check if createdAt and modifiedAt include today's date
+  test("createdAt and modifiedAt include today's date", function () {
+      expect(jsonData.meta.createdAt).to.include(year);
+      expect(jsonData.meta.modifiedAt).to.include(year);
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for product field
+  test("Product field is not null and does not equal 'Unassigned'", function () {
+      expect(jsonData.data.attributes.product).to.not.be.null;
+      expect(jsonData.data.attributes.product).to.not.equal('Unassigned');
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for objectType
+  test("Response contains an object with 'objectType' equal to 'syncs'", function () {
+      expect(jsonData.meta).to.have.property('objectType', 'syncs');
+  });
+}
+
+settings {
+  encodeUrl: true
+}

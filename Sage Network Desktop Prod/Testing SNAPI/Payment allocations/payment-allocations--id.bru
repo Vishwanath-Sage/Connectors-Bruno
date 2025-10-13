@@ -1,0 +1,15 @@
+meta {
+  name: payment-allocations/:id
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{NetworkUrl}}/datasets/{{networkProductInstancesTenantId}}/payment-allocations
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

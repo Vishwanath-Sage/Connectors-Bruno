@@ -1,0 +1,25 @@
+meta {
+  name: 2. Upload zip file
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{connectorBlobUploadUrl}}
+  body: file
+  auth: none
+}
+
+headers {
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+  x-ms-blob-type: BlockBlob
+}
+
+body:file {
+  file: @file(C:\Users\Puja.Kumari2\Downloads\Demo1 2.zip) @contentType(application/zip)
+}
+
+settings {
+  encodeUrl: false
+}

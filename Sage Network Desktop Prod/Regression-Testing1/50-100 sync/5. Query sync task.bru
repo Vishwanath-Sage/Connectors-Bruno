@@ -1,0 +1,89 @@
+meta {
+  name: 5. Query sync task
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks?take=20&skip=0
+  body: none
+  auth: inherit
+}
+
+params:query {
+  take: 20
+  skip: 0
+}
+
+headers {
+  accept: application/vnd.api+json
+}
+
+script:pre-request {
+  // // pm.test("Check if the APIs executed 50 times", function () {
+  // //     var responseData = pm.response.json();
+  //     var totalExecutions = 0;
+      
+      // Check the count of each API execution
+      // responseData.data.forEach(function(task) {
+      //     if (task.attributes.stepName === "Create sync task API" || 
+      //         task.attributes.stepName === "Upload zip file API" || 
+      //         task.attributes.stepName === "Update sync task API" || 
+      //         task.attributes.stepName === "Retrieve sync task API") {
+      //         totalExecutions++;
+      //     }
+      // });
+  
+      // // Execute Query sync task if total executions are 50, else, execute all the above sync tasks
+      // if (totalExecutions === 50) {
+  //     //     pm.environment.set("executionType", "Query sync task");
+      // } else {
+  //     //     pm.environment.set("executionType", "Execute all the above sync tasks");
+      // }
+      // });
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  // // pm.test("Check if the Create sync task API, upload zip file, and update sync task are executed 50 times", function () {
+  // //     var responseJSON = pm.response.json();
+  //     var createSyncTaskCount = 0;
+  //     var uploadZipFileCount = 0;
+  //     var updateSyncTaskCount = 0;
+  
+  //     responseJSON.data.forEach(function(task) {
+  //         if (task.attributes.stepName === "Create sync task") {
+  //             createSyncTaskCount++;
+  //         } else if (task.attributes.stepName === "Upload zip file") {
+  //             uploadZipFileCount++;
+  //         } else if (task.attributes.stepName === "Update sync task") {
+  //             updateSyncTaskCount++;
+  //         }
+  //     });
+  
+  //     if (createSyncTaskCount < 50 || uploadZipFileCount < 50 || updateSyncTaskCount < 50) {
+  //         console.log("Wait for the tasks to complete 50 times");
+  //     } else {
+  //         console.log("Execute the query sync task every 10 minutes for 8 hours");
+  //         var completedCount = 0;
+  //         var queuedCount = 0;
+  
+  //         responseJSON.data.forEach(function(task) {
+  //             if (task.attributes.status === "completed") {
+  //                 completedCount++;
+  //             } else if (task.attributes.status === "queued") {
+  //                 queuedCount++;
+  //             }
+  //         });
+  
+  //         console.log("Completed tasks count: " + completedCount);
+  //         console.log("Queued tasks count: " + queuedCount);
+  //     }
+  // });
+}
+
+settings {
+  encodeUrl: true
+}

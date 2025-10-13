@@ -1,0 +1,53 @@
+meta {
+  name: Query Sync for 401 error code
+  type: http
+  seq: 18
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/eb33ede1-9a9f-a249-b8b0-b1acb48bc6a22/sync-tasks?take=20&skip=0
+  body: none
+  auth: inherit
+}
+
+params:query {
+  take: 20
+  skip: 0
+}
+
+headers {
+  traceparent: 
+  tracestate: 
+  Accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Response status code is 401", function () {
+      expect(res.getStatus()).to.equal(401);
+  });
+  
+  var jsonData = res.getBody();
+  
+  // Test for the operationType in the response
+  test("Title is eqaul to Unauthorized", function () {
+      expect(jsonData.errors[0].title).to.equal('Unauthorized');
+  });
+  
+  // Test for the packageType in the response
+  test("details is equal to Missing required claims for authorization.", function () {
+      expect(jsonData.errors[0].detail).to.equal('Missing required claims for authorization.');
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}
+
+docs {
+  This endpoint makes an HTTP GET request to retrieve synchronization tasks for the 'Accounting Data' dataset. The request includes query parameters for pagination, with a 'take' parameter to specify the number of records to retrieve and a 'skip' parameter to indicate the number of records to skip.
+  
+  The response returns a status code of 200 and a content type of 'application/vnd.api+json'. The response body contains an array of synchronization task objects, each with attributes such as attempts, status, operation type, message, package type, step name, dataset ID, product, process start date, process end date, and next run date. Additionally, the response includes relationships with various data entities such as companies, contacts, invoices, invoice lines, payments, and more.
+  
+  Each synchronization task object also includes metadata such as validation status, creation and modification timestamps, SDK version, connector version, product version, and model version.
+}

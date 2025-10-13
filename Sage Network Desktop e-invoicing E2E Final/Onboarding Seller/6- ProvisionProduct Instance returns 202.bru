@@ -1,0 +1,166 @@
+meta {
+  name: 6- ProvisionProduct Instance returns 202
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{OrgServiceURL}}/v3/provision/account?PendingProductInstances=false
+  body: json
+  auth: none
+}
+
+params:query {
+  PendingProductInstances: false
+}
+
+headers {
+  Content-Type: application/json
+  X-Idempotency-Key: {{provisionAccountIdempotency3}}
+  Authorization: Bearer {{jwtCloudId}}
+}
+
+body:json {
+  {
+      "Account": {
+          "Id": "{{accountId}}"
+      },
+      "Business": {
+          "Name": "{{CompanyName}}",
+          "CountryCode": "FR",
+          "ExternalId": "{{provisionAccountExternalId}}",
+          "ExternalSource": "Sage Desktop",
+          "RegisteredLocation": "FR",
+          "RegisteredCountry": "FR",
+          "BusinessAddress": {
+          "Type": "main",
+          "Line1": "Sage",
+          "Country": "FR"
+            }
+        },
+        "Licence": {
+            "Application": "sage.integrate.myproduct",
+            "Version": "0",
+            "Provider": "integrate.my.provider",
+            "LicenceData": "{\"serial\":\"ACTIVE\"}"
+           },
+      "ProductSubscription": {
+          "SubscriptionId": "{{ProductSubscriptionId}}",
+          "Origin": "product",
+          "BackOfficeId": "13922345",
+          "BackOfficeSource": "InTouch",
+         
+          "ProductLicenses": 
+              [ {
+                  "Product": "sage100FR",
+                  "ProductCode": "sage100FR",
+                  "ProductLicenseType": "sage100FR_premium",
+                  "Expires": "2030-03-12 10:38:14Z"
+                },
+                { "Product": "network",
+                   "ProductCode": "network",
+                  "ProductLicenseType": "network-standard",
+                  "Expires": "2030-01-01T00:00:00+00:00"
+                } ]
+            }
+  }
+}
+
+script:pre-request {
+  // Generate random UUID for header X-Idempotency-Key
+  var uuid = require('uuid'); var randomUUID = uuid.v4();
+  bru.setEnvVar("provisionAccountIdempotency3", randomUUID);
+   
+  // Generate random UUID for body BackOfficeId
+  var uuid = require('uuid'); var randomUUID = uuid.v4()
+  bru.setEnvVar("provisionAccountBackOfficeId", randomUUID);
+   
+  // Generate random UUID for body ExternalId
+  var uuid = require('uuid'); var randomUUID = uuid.v4();
+  bru.setEnvVar("provisionAccountExternalId", randomUUID);
+   
+  // account name
+  bru.setEnvVar("provisionAccountName", bru.interpolate('{{$randomCompanyName}}'));
+   
+  // create ManagingAccountId without Lodash
+  function randomString(minValue, maxValue, dataSet = 'abcdefghijklmnopqrstuvwxyz0123456789') {
+    // if no minValue passed, default both to 50
+    if (typeof minValue !== 'number') {
+      minValue = 50;
+      maxValue = 50;
+    }
+    // if only minValue is a number, make maxValue = minValue
+    else if (typeof maxValue !== 'number') {
+      maxValue = minValue;
+    }
+   
+    // pick a random integer between minValue and maxValue (inclusive)
+    const length = Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
+   
+    // build the random string
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += dataSet.charAt(Math.floor(Math.random() * dataSet.length));
+    }
+    return result;
+  }
+   
+  // set it in Bruno’s environment so you can use {{provisionAccountManagingAccountId}}
+  bru.setEnvVar(
+    'provisionAccountManagingAccountId',
+    randomString()  // defaults to 50 chars if you don’t pass args
+  );
+   
+  // create SubscriptionId without Lodash
+  function randomString(minValue, maxValue, dataSet = 'abcdefghijklmnopqrstuvwxyz0123456789') {
+    // default to length 50 if nothing passed
+    if (typeof minValue !== 'number') {
+      minValue = 50;
+      maxValue = 50;
+    }
+    // if only min passed, make max = min
+    else if (typeof maxValue !== 'number') {
+      maxValue = minValue;
+    }
+   
+    // pick a random integer between minValue and maxValue (inclusive)
+    const length = Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
+   
+    // build the string
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += dataSet.charAt(Math.floor(Math.random() * dataSet.length));
+    }
+    return result;
+  }
+   
+  // set it into Bruno’s environment
+  bru.setEnvVar(
+    'provisionAccountSubscriptionId',
+    randomString()  // will default to 50 chars if you don’t pass args
+  );
+  // Generate a UUID-like idempotency key
+  function uuidLike() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+    }
+    return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+  }
+  
+  bru.setVar("idempotencyKey3", uuidLike());
+  
+  // Random company name (Bruno doesn’t have {{$randomCompanyName}} like Postman)
+  // Example: "TestCompany-" + random number
+  const randomCompanyName = "TestCompany-" + Math.floor(Math.random() * 10000);
+  bru.setVar("CompanyName", randomCompanyName);
+}
+
+script:post-response {
+  test("OK", function () {
+      expect(res.getStatus()).to.equal(202);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,548 @@
+meta {
+  name: 1. Create sync task
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}}/sync-tasks
+  body: json
+  auth: inherit
+}
+
+params:query {
+  ~: null
+}
+
+headers {
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+  Idempotency-Key: {{$guid}}
+}
+
+body:json {
+  {
+      "Data": {
+          "Attributes": {
+              "PackageType": "Full"
+          },
+          "Relationships": {
+              "Companies": {
+                  "data": [
+                      {
+                          "Id": "1041",
+                          "Type": "Company"
+                      }
+                  ]
+              },
+              "Contacts": {
+                  "data": [
+                      {
+                          "Id": "1360",
+                          "Type": "Contact"
+                      }
+                  ]
+              },
+              "Invoices": {
+                  "data": [
+                      {
+                          "Id": "183705",
+                          "Type": "Invoice"
+                      }
+                  ]
+              },
+              "InvoiceLines": {
+                  "data": [
+                      {
+                          "Id": "407628",
+                          "Type": "InvoiceLine"
+                      }
+                  ]
+              },
+              "Payments": {
+                  "data": [
+                      {
+                          "Id": "183680",
+                          "Type": "Payment"
+                      }
+                  ]
+              },
+              "PaymentAllocations": {
+                  "data": [
+                      {
+                          "Id": "41701",
+                          "Type": "PaymentApplication"
+                      }
+                  ]
+              },
+              "CreditAllocations": {
+                  "data": [
+                      {
+                          "Id": "12551",
+                          "Type": "CreaditMemoApplication"
+                      }
+                  ]
+              },
+              "FinancialYearSettings": {
+                  "data": [
+                      {
+                          "Id": "1",
+                          "Type": "FinancialYearSetting"
+                      }
+                  ]
+              },
+              "FinancialAccounts": {
+                  "data": [
+                      {
+                          "Id": "119",
+                          "Type": "FinancialAccount"
+                      }
+                  ]
+              },
+              "FinancialAccountBalanceHistories": {
+                  "data": [
+                      {
+                          "Id": "15",
+                          "Type": "FinancialAccountBalanceHistory"
+                      }
+                  ]
+              },
+              "BaseCurrencies": {
+                  "data": [
+                      {
+                          "Id": "1",
+                          "Type": "BaseCurrency"
+                      }
+                  ]
+              },
+              "CustomFields": {
+                  "data": [
+                      {
+                          "Id": "183705",
+                          "Type": "CustomField"
+                      }
+                  ]
+              },
+              "JournalEntries": {
+                  "data": [
+                      {
+                          "Id": "68736",
+                          "Type": "JournalEntry"
+                      }
+                  ]
+              },
+              "JournalEntryLines": {
+                  "data": [
+                      {
+                          "Id": "146336",
+                          "Type": "JournalEntryLine"
+                      }
+                  ]
+              },
+              "Attachments": null
+          },
+          "Id": null,
+          "Type": "SyncTask"
+      },
+      "Included": [
+          {
+              "id": "1041",
+              "type": "Company",
+              "attributes": {
+                  "operationType": "Insert",
+                  "companyName": "Ford INTACCT corporation",
+                  "companyType": "Customer",
+                  "NetworkId": null,
+                  "parentCompanyId": "14",
+                  "parentCompanyErpKey": "Company--14",
+                  "defaultCurrencyCode": "USD",
+                  "externalReference": "testsep_11",
+                  "taxId": "",
+                  "enterpriseId": "",
+                  "enterpriseErpKey": "",
+                  "timeStamp": "2023-12-22T13:19:43.083Z",
+                  "status": null,
+                  "message": null
+              },
+              "relationships": {
+                  "primaryContact": {
+                      "id": "1360",
+                      "type": "Contact"
+                  },
+                  "address": {
+                      "data": {
+                          "id": "1",
+                          "type": "Address"
+                      }
+                  }
+              }
+          },
+          {
+              "id": "1048",
+              "type": "Company",
+              "attributes": {
+                  "operationType": "Insert",
+                  "companyName": "Ford INTACCT corporation",
+                  "companyType": "Customer",
+                  "NetworkId": null,
+                  "parentCompanyId": "14",
+                  "parentCompanyErpKey": "Company--14",
+                  "defaultCurrencyCode": "USD",
+                  "externalReference": "testsep_11",
+                  "taxId": "",
+                  "enterpriseId": "",
+                  "enterpriseErpKey": "",
+                  "timeStamp": "2023-12-22T13:19:43.083Z",
+                  "status": null,
+                  "message": null
+              },
+              "relationships": {
+                  "primaryContact": {
+                      "id": "1360",
+                      "type": "Contact"
+                  },
+                  "address": {
+                      "data": {
+                          "id": "1",
+                          "type": "Address"
+                      }
+                  }
+              }
+          },
+          {
+              "id": "1099",
+              "type": "Company",
+              "attributes": {
+                  "operationType": "Insert",
+                  "companyName": "Ford INTACCT corporation",
+                  "companyType": "Customer",
+                  "NetworkId": null,
+                  "parentCompanyId": "14",
+                  "parentCompanyErpKey": "Company--14",
+                  "defaultCurrencyCode": "USD",
+                  "externalReference": "testsep_11",
+                  "taxId": "",
+                  "enterpriseId": "",
+                  "enterpriseErpKey": "",
+                  "timeStamp": "2023-12-22T13:19:43.083Z",
+                  "status": null,
+                  "message": null
+              },
+              "relationships": {
+                  "primaryContact": {
+                      "id": "1360",
+                      "type": "Contact"
+                  },
+                  "address": {
+                      "data": {
+                          "id": "1",
+                          "type": "Address"
+                      }
+                  }
+              }
+          },
+          {
+              "id": "1044",
+              "type": "Company",
+              "attributes": {
+                  "operationType": "Insert",
+                  "companyName": "Ford INTACCT corporation",
+                  "companyType": "Customer",
+                  "NetworkId": null,
+                  "parentCompanyId": "14",
+                  "parentCompanyErpKey": "Company--14",
+                  "defaultCurrencyCode": "USD",
+                  "externalReference": "testsep_11",
+                  "taxId": "",
+                  "enterpriseId": "",
+                  "enterpriseErpKey": "",
+                  "timeStamp": "2023-12-22T13:19:43.083Z",
+                  "status": null,
+                  "message": null
+              },
+              "relationships": {
+                  "primaryContact": {
+                      "id": "1360",
+                      "type": "Contact"
+                  },
+                  "address": {
+                      "data": {
+                          "id": "1",
+                          "type": "Address"
+                      }
+                  }
+              }
+          },
+          {
+              "id": "1360",
+              "type": "Contact",
+              "attributes": {
+                  "contactName": null,
+                  "title": null,
+                  "emailAddress": null,
+                  "phone": "09765997203",
+                  "fax": "",
+                  "address1": "666, guruwar peth, Mominpura, Above noble school",
+                  "address2": "pune 42",
+                  "address3": null,
+                  "city": "pune",
+                  "stateRegion": "Maharashtra",
+                  "postalCode": "411042",
+                  "countryCode": "US",
+                  "webpageUrl": null,
+                  "created": "2023-12-22T13:19:43.083Z",
+                  "modified": "2023-12-22T13:19:43.083Z"
+              }
+          },
+          {
+              "id": "183705",
+              "type": "Invoice",
+              "attributes": {
+                  "networkId": null,
+                  "operationType": "Insert",
+                  "invoiceReferenceCode": "84227",
+                  "sendImmediately": false,
+                  "isEInvoice": false,
+                  "invoiceType": "AR Invoice",
+                  "customerId": "B44A68B0-FFE2-4D7A-ACA4-119663F30DC1",
+                  "totalAmount": 100.0,
+                  "currencyCode": "USD",
+                  "invoiceDate": "2023-12-22T13:19:43.083Z",
+                  "created": "2023-12-22T13:19:43.083Z",
+                  "isDraft": true,
+                  "departmentErpKey": "1251A2FA-CFDD-440C-97E6-0018A3AEB14B",
+                  "description": null,
+                  "discountAmount": 0,
+                  "outstandingBalanceAmount": 100.0,
+                  "paymentDueDate": "2023-12-22T13:19:43.083Z",
+                  "paymentPriority": null,
+                  "purchaseOrderCode": "",
+                  "referenceCode": "84227",
+                  "salesPersonCode": null,
+                  "salesTaxAmount": 0,
+                  "termName": "",
+                  "companyErpKey": "33E72B9E-11EE-49C0-BC08-8DFBE25A0EB5",
+                  "timeStamp": "2023-12-22T13:19:43.083Z",
+                  "status": null,
+                  "message": null
+              },
+              "relationships": {
+                  "lines": [
+                      {
+                          "data": {
+                              "id": "407628",
+                              "type": "InvoiceLine"
+                          }
+                      }
+                  ]
+              }
+          },
+          {
+              "id": "407628",
+              "type": "InvoiceLine",
+              "attributes": {
+                  "accountNo": null,
+                  "accountLabel": null,
+                  "departmentErpKey": null,
+                  "description": "",
+                  "lineNumber": "1",
+                  "locationErpKey": null,
+                  "offsetGlAccountNo": null,
+                  "productCode": "",
+                  "quantity": 0,
+                  "unitMeasureCode": null,
+                  "unitPrice": 0,
+                  "totalAmount": 100
+              }
+          },
+          {
+              "id": "183680",
+              "type": "Payment",
+              "attributes": {
+                  "NetworkId": null,
+                  "companyId": "33E72B9E-11EE-49C0-BC08-8DFBE25A0EB5",
+                  "CompanyErpKey": "Customer--107644",
+                  "paymentTypeCode": "AR Payment",
+                  "paymentAmount": 0,
+                  "currencyCode": "USD",
+                  "currencyRate": 1.0,
+                  "bankAccountId": null,
+                  "paymentDate": "2023-12-22T13:19:43.083Z",
+                  "postDate": "2023-12-22T13:19:43.083Z",
+                  "erpKey": "AR Payment--183680",
+                  "tenderType": "Cash",
+                  "memoText": null,
+                  "unappliedAmount": 0,
+                  "baseCurrencyPaymentAmount": 0,
+                  "baseCurrencyUnappliedAmount": 68.0,
+                  "timeStamp": "2023-12-22T13:19:43.083Z",
+                  "status": null,
+                  "message": null,
+                  "lastAttempted": "2023-12-22T13:19:43.083Z"
+              },
+              "relationships": {
+                  "company": {
+                      "data": {
+                          "id": "107644",
+                          "type": "Company"
+                      }
+                  },
+                  "applications": {
+                      "data": [
+                          {
+                              "id": "41701",
+                              "type": "PaymentApplication"
+                          }
+                      ]
+                  }
+              }
+          },
+          {
+              "id": "183705",
+              "type": "CustomField",
+              "attributes": {
+                  "onMatchAction": 0,
+                  "erpKey": "AR Invoice--183705",
+                  "tableKey": "Invoice",
+                  "customFieldLabel": "MY_INVOICE_CUSTOMFIELD"
+              }
+          },
+          {
+              "id": "1",
+              "type": "BaseCurrency",
+              "attributes": {
+                  "baseCurrencyCode": "USD"
+              }
+          },
+          {
+              "id": "119",
+              "type": "FinancialAccount",
+              "attributes": {
+                  "code": "9000",
+                  "ErpKey": "119",
+                  "name": "Manager",
+                  "status": "active",
+                  "cashflowType": "Operating Activities",
+                  "description": "Manager",
+                  "classification": "Asset",
+                  "category": "Accounts Receivable",
+                  "subcategory": "Accounts Receivable",
+                  "systemAccountType": null,
+                  "created": "2023-12-22T13:19:43.083Z",
+                  "createdUserId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                  "modified": "2023-12-22T13:19:43.083Z",
+                  "modifiedUserId": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+              }
+          },
+          {
+              "id": "1",
+              "type": "FinancialYearSetting",
+              "attributes": {
+                  "yearType": "Calendar",
+                  "totalPeriods": 12,
+                  "startDate": "01-01",
+                  "endDate": "12-31"
+              }
+          },
+          {
+              "id": "41701",
+              "type": "PaymentApplication",
+              "attributes": {
+                  "onMatchAction": 0,
+                  "erpKey": "AR Payment--183680--41701",
+                  "entryNumber": 410201,
+                  "applyToInvoiceDate": "2023-12-22T13:19:43.083Z",
+                  "paymentAppliedAmount": 4.0,
+                  "created": "2023-12-22T13:19:43.083Z",
+                  "modified": "2023-12-22T13:19:43.083Z"
+              },
+              "relationships": {
+                  "payment": {
+                      "data": {
+                          "id": "183680",
+                          "type": "Payment"
+                      }
+                  },
+                  "invoice": {
+                      "data": {
+                          "id": "183667",
+                          "type": "Invoice"
+                      }
+                  }
+              }
+          },
+          {
+              "id": "146336",
+              "type": "GLEntryLine",
+              "attributes": {
+                  "erpKey": "146336",
+                  "accountNumber": "1100",
+                  "accountName": "1100",
+                  "debitAmount": 791715.0,
+                  "creditAmount": 0,
+                  "currencyCode": "USD",
+                  "baseDebit": 791715.0,
+                  "baseCredit": 0,
+                  "baseCurrencyCode": "USD",
+                  "createdUser": null,
+                  "memo": null,
+                  "created": "2023-12-22T13:19:43.083Z",
+                  "modified": "2023-12-22T13:19:43.083Z"
+              },
+              "relationships": {
+                  "financialAccount": {
+                      "data": {
+                          "id": "119",
+                          "type": "FinancialAccount"
+                      }
+                  },
+                  "journal": {
+                      "data": {
+                          "id": "1365--68754",
+                          "type": "Journal"
+                      }
+                  }
+              }
+          },
+          {
+              "id": "68736",
+              "type": "GLEntry",
+              "attributes": {
+                  "erpKey": "ARJ--68736",
+                  "source": "",
+                  "postedDate": "2023-12-22T13:19:43.084Z",
+                  "journalDate": "2023-12-22T13:19:43.084Z",
+                  "statusCode": "Draft"
+              },
+              "relationships": {
+                  "company": {
+                      "id": "1041",
+                      "type": "Company"
+                  }
+              }
+          },
+          {
+              "id": "1",
+              "type": "Address",
+              "attributes": {
+                  "address1": "123 Accounting Lane",
+                  "address2": "Test Sample",
+                  "address3": "tableKey",
+                  "address4": "San Francisco",
+                  "countrySubdivision": "US",
+                  "postalCode": "125211",
+                  "country": "US"
+              }
+          }
+      ]
+  }
+}
+
+script:post-response {
+  var jsonData = res.getBody();
+  bru.setEnvVar("connectorSyncTaskId", jsonData.data.id);
+}
+
+settings {
+  encodeUrl: true
+}

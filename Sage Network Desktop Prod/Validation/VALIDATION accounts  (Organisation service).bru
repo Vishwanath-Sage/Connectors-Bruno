@@ -1,0 +1,25 @@
+meta {
+  name: VALIDATION accounts  (Organisation service)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{organisationServiceURL}}/accounts/{{provisionAccountResponseAccountId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{Jwt}}
+}
+
+script:post-response {
+  test("OK", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,164 @@
+meta {
+  name: 7- Poll Provision Product Instance Org Service
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{OrgServiceURL}}/v3/provision/account?PendingProductInstances=false
+  body: json
+  auth: none
+}
+
+params:query {
+  PendingProductInstances: false
+}
+
+headers {
+  X-Idempotency-Key: {{provisionAccountIdempotency6}}
+  Authorization: Bearer {{jwtCloudId}}
+}
+
+body:json {
+  {
+      "Account": {
+          "Id": "{{accountIdBuyer}}"
+      },
+      "Business": {
+          "Name": "{{CompanyNameBuyer}}",
+          "CountryCode": "FR",
+          "ExternalId": "{{provisionAccountExternalIdBuyer}}",
+          "ExternalSource": "Sage Desktop",
+          "RegisteredLocation": "FR",
+          "RegisteredCountry": "FR",
+          "BusinessAddress": {
+          "Type": "main",
+          "Line1": "Sage",
+          "Country": "FR"
+            }
+        },
+        "Licence": {
+            "Application": "sage.integrate.myproduct",
+            "Version": "0",
+            "Provider": "integrate.my.provider",
+            "LicenceData": "{\"serial\":\"ACTIVE\"}"
+           },
+      "ProductSubscription": {
+          "SubscriptionId": "{{ProductSubscriptionIdBuyer}}",
+          "Origin": "product",
+          "BackOfficeId": "13922345",
+          "BackOfficeSource": "InTouch",     
+          "ProductLicenses": 
+              [ {
+                  "Product": "sage100FR",
+                  "ProductCode": "sage100FR",
+                  "ProductLicenseType": "sage100FR_premium",
+                  "Expires": "2030-03-12 10:38:14Z"
+                },
+                { "Product": "network",
+                   "ProductCode": "network",
+                  "ProductLicenseType": "network-standard",
+                  "Expires": "2030-01-01T00:00:00+00:00"
+                } ]
+            }
+  }
+}
+
+script:post-response {
+  const status = res.getStatus();
+  const data = res.getBody();
+  
+  if (status === 202) {
+    console.log("Still provisioning… will retry automatically");
+  }
+  
+  else if (status === 201) {
+    // Save basic IDs
+    bru.setVar("provisionAccountResponseAccountId", data.AccountId);
+    bru.setVar("provisionAccountResponseUserId",    data.UserId);
+    bru.setVar("provisionAccountResponseBusinessId",data.BusinessId);
+  
+    // Look for productCode = 'network'
+    const net = (data.ProductInstances || []).find(p => p.ProductCode === 'network');
+    if (!net) {
+      throw new Error("No network product!");
+    }
+  
+    const tenantIdBuyer = net.TenantId;
+  
+    bru.setVar("networkProductInstancesId",         net.Id);
+    bru.setVar("networkProductInstancesTenantIdBuyer",   tenantIdBuyer);
+    bru.setVar("networkProductInstancesProductCode",net.ProductCode);
+    bru.setVar("TenantIdbuyer", tenantIdBuyer);
+  
+    // Also save first ProductInstance if exists
+    if (data.ProductInstances && data.ProductInstances.length > 0) {
+      bru.setVar("ProductInstanceId", data.ProductInstances[0].Id);
+      bru.setVar("TenantIdBuyer",          data.ProductInstances[0].TenantId);
+      bru.setVar("DatasetIdBuyer",         data.ProductInstances[0].TenantId);
+      bru.setVar("networkProductInstancesTenantIdBuyer",         data.ProductInstances[0].TenantId);
+    }
+  
+    // Build context hint
+    const email = bru.getVar("provisionAccountEmailBuyer");
+    console.log("email", email);
+  
+    const hint = JSON.stringify({
+      TenantId: tenantIdBuyer,
+      RoleIds: ["erp"],
+      OwnerEmailHint: email
+    });
+  
+    console.log("hint", hint);
+  
+    const encodedHint = stringToBase32(hint);
+    bru.setVar("contextHintEncodedBuyer", encodedHint);
+  
+    console.log("contextHintEncodedBuyer", encodedHint);
+  }
+  
+  // If BusinessId exists at root level, store it
+  if (!data.errors && data.BusinessId) {
+    bru.setVar("BusinessIdBuyer", data.BusinessId);
+  }
+  
+  // ===== Helpers =====
+  function stringToBase32(str) {
+    const base32chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+    let binString = "";
+    let pad = 0;
+  
+    for (let i = 0; i < str.length; i++) {
+      const bits = str.charCodeAt(i).toString(2);
+      binString += leftpad(bits, 8, "0");
+    }
+  
+    let base32String = "";
+    for (let j = 0; j < binString.length; j += 5) {
+      let chunk = binString.substr(j, 5);
+      if (chunk.length < 5) {
+        pad = 5 - chunk.length;
+        chunk += "0".repeat(pad);
+      }
+      const index = parseInt(chunk, 2);
+      base32String += base32chars[index];
+    }
+  
+    if (pad > 0) {
+      base32String += "=".repeat(pad);
+    }
+  
+    return base32String;
+  }
+  
+  function leftpad(str, len, pad) {
+    return str.length >= len
+      ? str
+      : new Array(len + 1 - str.length).join(pad) + str;
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+}

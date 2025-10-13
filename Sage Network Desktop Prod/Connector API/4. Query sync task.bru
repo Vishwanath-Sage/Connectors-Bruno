@@ -1,0 +1,163 @@
+meta {
+  name: 4. Query sync task
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks?take=20&skip=0
+  body: none
+  auth: inherit
+}
+
+params:query {
+  take: 20
+  skip: 0
+}
+
+headers {
+  accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Check for 'Completed' status", function () {
+  
+  var jsonData = res.getBody();
+  const targetStatus = "Completed";
+  //const responseStatus = jsonData.data.attributes.status;
+  const responseStatus = jsonData.data[0].attributes.status;
+  const maxRetries = 40;
+  const retryInterval = 10000;
+  
+  
+  if (responseStatus != targetStatus) {
+      if (bru.getEnvVar("retryCount") == undefined) {
+          bru.setEnvVar("retryCount", 0);
+      } else {
+          const retryCount = parseInt(bru.getEnvVar("retryCount"));
+          bru.setEnvVar("retryCount", (retryCount + 1));
+          if (retryCount < maxRetries) {
+              setTimeout(() => {
+                  bru.runner.setNextRequest(req.getName());
+              }, retryInterval);
+          } else {
+              console.log("Max retries reached. Target status not reached.");
+              bru.deleteEnvVar("retryCount");
+  //  //           pm.execution.setNextRequest(null);
+          }
+      }
+  }
+          var responseData = res.getBody();
+          expect("Completed").to.equal(responseData.data[0].attributes.status);
+  });
+  // // pm.test("Meta status details for subject,statusDetails and message of first value ", function () {
+  // //     const responseData = pm.response.json().data;
+  //     const validSubject = "Accounting Data";
+      
+  //     responseData.forEach((item) => {
+  //         const metaStatus = item.meta.status[0];
+  // //         pm.expect(metaStatus.subject).to.equal(validSubject);
+  // //         pm.expect(metaStatus.statusDetails).to.equal("Processing");
+  // //         pm.expect(metaStatus.message).to.equal("Sync started in subject Accounting Data");
+  //     });
+  // });
+  // Check Meta details
+  // // pm.test("Meta status details for subject,statusDetails and message of second value ", function () {
+  // //     const responseData = pm.response.json().data;
+  //     const validSubject = "Accounting Data";
+      
+  //     responseData.forEach((item) => {
+  //         const metaStatus1 = item.meta.status[1];
+  // //         pm.expect(metaStatus1.subject).to.equal(validSubject);
+  // //         pm.expect(metaStatus1.statusDetails).to.equal("Completed");
+  // //         pm.expect(metaStatus1.message).to.include("4,000");
+  //     });
+  // });  
+  
+  
+  test("OperationType is 'ToNetwork'", function () {
+    res.getBody().data.forEach(function(task) {
+      expect(task.attributes.operationType).to.equal('ToNetwork');
+    });
+  });
+  
+  
+  
+  test("Message attribute is equal to 'Sync is completed, for detail information see the service level status messages.'", function () {
+      res.getBody().data.forEach(function(task) {
+          expect(task.attributes.message).to.equal('Sync is completed, for detail information see the service level status messages.');
+      });
+  });
+  
+  test("Each synchronization task has 'attempts' attribute equal to 0", function () {
+    res.getBody().data.forEach(function(task) {
+      expect(task.attributes.attempts).to.equal(0);
+    });
+  });
+  test("First and self links start with 'https'", function () {
+      const response = res.getBody();
+      const firstLink = response.links.first;
+      const selfLink = response.links.self;
+  
+  expect(firstLink, "First link is missing or invalid").to.be.a('string').and.match(/^https/);
+      expect(selfLink, "Self link is missing or invalid").to.be.a('string').and.match(/^https/);
+  });
+  test("Type attribute is equal to 'SyncTask'", function () {
+      res.getBody().data.forEach(function(task) {
+          expect(task.type).to.equal('SyncTask');
+      });
+  });
+  test("Each synchronization task has 'id' attribute with a length of 36 bits", function () {
+      res.getBody().data.forEach(function(task) {
+          expect(task.id).to.have.lengthOf(36);
+      });
+  });
+  test("PackageType attribute is equal to 'Full'", function () {
+      res.getBody().data.forEach(function(task) {
+          expect(task.attributes.packageType).to.equal('Full');
+      });
+  });
+  
+  test("Each synchronization task has 'stepName' attribute equal to 'Finalized'", function () {
+      res.getBody().data.forEach(function(task) {
+          expect(task.attributes.stepName).to.equal('Finalized');
+      });
+  });
+  
+  // Test to check if the createdAt and modifiedAt attributes contain today's date
+  test("CreatedAt and modifiedAt attributes contain today's date", function () {
+      const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+      const responseData = res.getBody().data;
+  
+      responseData.forEach((item) => {
+          const createdAt = item.meta.createdAt.split('T')[0];
+          const modifiedAt = item.meta.modifiedAt.split('T')[0];
+          expect(createdAt).to.equal(today);
+          expect(modifiedAt).to.equal(today);
+      });
+  });
+  var responseData = res.getBody().data;
+  
+  test("Product attribute is not null and not equal to 'Unassigned'", function () {
+      responseData.forEach(function(task) {
+          expect(task.attributes.product).to.not.be.null.and.to.not.equal('Unassigned');
+      });
+  });
+  var responseJSON = res.getBody();
+  
+  // Check for presence of objectType property
+  test("Response contains an object with objectType equal to 'syncs'", function () {
+      expect(responseJSON.data).to.be.an('array').that.is.not.empty;
+      responseJSON.data.forEach(function(task) {
+          expect(task.meta).to.have.property('objectType', 'syncs');
+      });
+  });
+}
+
+settings {
+  encodeUrl: true
+}

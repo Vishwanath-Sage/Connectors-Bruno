@@ -1,0 +1,38 @@
+meta {
+  name: 62 |verify invalid dataset id
+  type: http
+  seq: 78
+}
+
+post {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/eb33ede1-9a9f-a249-b8b0-b1acb48bc6a22/sync-tasks
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+  Idempotency-Key: {{$guid}}
+}
+
+body:json {
+  {
+      "data": {
+          "type": "SyncTask",
+          "attributes": {
+              "packageType": "Full"
+          }
+      }
+  }
+}
+
+script:post-response {
+  test("Created", function(){
+      expect(res.getStatus()).to.equal(401);
+  })
+}
+
+settings {
+  encodeUrl: true
+}

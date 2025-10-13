@@ -1,0 +1,40 @@
+meta {
+  name: 59 Invalid DataSetID of Creat Empty Sync
+  type: http
+  seq: 78
+}
+
+post {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/8cb29227-f2d7-410c-d76d-fc45b8b79fF3/sync-tasks
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+  Idempotency-Key: {{$guid}}
+}
+
+body:json {
+  {
+      "data": {
+          "type": "SyncTask",
+          "attributes": {
+              "packageType": "partial"
+          }
+      }
+  }
+}
+
+script:post-response {
+  test("Not Created sync id", function(){
+      expect(res.getStatus()).to.equal(401);
+  })
+  
+  
+}
+
+settings {
+  encodeUrl: true
+}

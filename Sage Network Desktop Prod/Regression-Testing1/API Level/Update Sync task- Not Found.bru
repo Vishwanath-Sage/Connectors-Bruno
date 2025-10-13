@@ -1,0 +1,77 @@
+meta {
+  name: Update Sync task| Not Found
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks?take=20&skip=0
+  body: json
+  auth: inherit
+}
+
+params:query {
+  take: 20
+  skip: 0
+}
+
+headers {
+  Idempotency-Key: {{$guid}}
+  traceparent: 
+  tracestate: 
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+}
+
+body:json {
+  {
+      "data": {
+          "type": "synctask",
+          "id": "0faaab4b-8c9d-4e82-93e3-66a84ddff69A",
+          "attributes": {
+              "summary": {
+                  "totalInvoices": 0,
+                  "totalPayments": 0,
+                  "totalCompanies": 0,
+                  "totalContacts": 0,
+                  "totalGlAccounts": 0,
+                  "totalGlAccountEntries": 0,
+                  "totalCustomFields": 0
+              }
+          },
+          "relationships": {
+              "attachment": {
+                  "data": {
+                      "id": "{{connectorAttachmentId}}",
+                      "type": "attachment"
+                  }
+              }
+          }
+      }
+  }
+}
+
+script:post-response {
+  test("Response code is 404", function () {
+      expect(res.getStatus()).to.equal(404);
+  });
+  
+  var jsonData = res.getBody();
+  
+  test("Response contains an error with title 'Not found'", function () {
+      expect(jsonData.errors).to.be.an('array').that.is.not.empty;
+      jsonData.errors.forEach(function(error) {
+          expect(error).to.have.property('title').that.equals('Not found');
+      });
+  });
+  var jsonData = res.getBody();
+  // Test for the error structure and specific detail
+  test("Response contains an error with details", function () {
+     
+          expect('SyncId not exists in database').that.equals(jsonData.errors[0].detail);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

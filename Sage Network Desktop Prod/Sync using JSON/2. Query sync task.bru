@@ -1,0 +1,26 @@
+meta {
+  name: 2. Query sync task
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks?filter=type eq 'toNetwork'&take=3&skip=0
+  body: none
+  auth: inherit
+}
+
+params:query {
+  filter: type eq 'toNetwork'
+  take: 3
+  skip: 0
+}
+
+headers {
+  accept: application/vnd.api+json
+  Authorization: {{bearer_token}}
+}
+
+settings {
+  encodeUrl: true
+}

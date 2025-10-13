@@ -1,0 +1,24 @@
+meta {
+  name: 3. Query sync task with ID
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks/{{connectorSyncTaskId}}?include=Details
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: Details
+}
+
+headers {
+  accept: application/json
+  Authorization: {{BearerToken}}
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,82 @@
+meta {
+  name: 5- Product Subcription
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{OrgServiceURL}}/v1/accounts/{{accountId}}/product-subscriptions
+  body: json
+  auth: none
+}
+
+headers {
+  X-Idempotency-Key: {{provisionAccountIdempotency2}}
+  Authorization: Bearer {{jwtCloudId}}
+}
+
+body:json {
+  {
+    "SubscriptionId": "{{SubscriptionId}}",
+    "Origin": "product",
+    "BackOfficeId": "13922345",
+    "BackOfficeSource": "InTouch"
+  }
+}
+
+vars:post-response {
+  SubscriptionId: {{SubscriptionId}}
+}
+
+script:pre-request {
+  // --- helper ---
+  function makeUUID() {
+    try {
+      const { randomUUID } = require("crypto");
+      return randomUUID();
+    } catch {
+      function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+      }
+      return `${s4()}${s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
+    }
+  }
+  
+  // --- previous value (raw) ---
+  const prev = bru.getVar("SubscriptionId");
+  
+  // --- new value ---
+  const next = makeUUID();
+  
+  // Set new values (runtime + env)
+  bru.setVar("SubscriptionId", next);
+  bru.setEnvVar("SubscriptionId", next);
+  
+  // --- Use bru.interpolate for logging or composing strings ---
+  const logLine = bru.interpolate(
+    "[SubscriptionId] prev={{SubscriptionId}} -> next={{SubscriptionId}}"
+  );
+  // At this moment both prev/next equal (we just set it). If you want the *real* previous, use `prev` directly:
+  console.log(`[SubscriptionId] prev=${prev || "<none>"} -> next=${next}`);
+  
+  
+  
+  bru.setVar("provisionAccountIdempotency2", makeUUID()); // 
+  bru.setEnvVar("provisionAccountIdempotency2", bru.getVar("idempotencyKey"));
+  
+  
+  
+}
+
+script:post-response {
+  const jsonData = res.getBody();
+  
+  if (!jsonData.errors) {
+    bru.setVar("ProductSubscriptionId", jsonData.Id);
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+}

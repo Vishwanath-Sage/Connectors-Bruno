@@ -1,0 +1,23 @@
+meta {
+  name: 2. User information
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{sageIdURL}}/userinfo
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  var jsonData = res.getBody();
+  bru.setEnvVar("provisionAccountEmailBuyer", jsonData.email);
+  bru.setVar("provisionAccountEmailBuyer", jsonData.email);
+  bru.setEnvVar("LoggedInUserAuth0PrincipalIdbuyer", jsonData.sub)
+  bru.setVar("LoggedInUserAuth0PrincipalIdbuyer", jsonData.sub);
+}
+
+settings {
+  encodeUrl: true
+}

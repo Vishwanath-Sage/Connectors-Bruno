@@ -1,0 +1,44 @@
+meta {
+  name: 6. User login or signup prod
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://id.sage.com/userinfo
+  body: none
+  auth: oauth2
+}
+
+auth:oauth2 {
+  grant_type: authorization_code
+  callback_url: https://id.sage.com/mobile
+  authorization_url: https://id.sage.com/authorize
+  access_token_url: https://id.sage.com/oauth/token
+  refresh_token_url: https://id.sage.com/oauth/token
+  client_id: SrPpKzCgY4uS1fAMI79s39XtaXH51LaE
+  client_secret: Gw82R90wsTW7wzI0m-P40xM7QhKPATjXUWju2wtjl1Bz-1wXoS3vizG8qnoLKwpC
+  scope: openid email profile offline_access all
+  state: 
+  pkce: true
+  credentials_placement: body
+  credentials_id: credentials
+  token_placement: header
+  token_header_prefix: 
+  auto_fetch_token: true
+  auto_refresh_token: false
+}
+
+script:post-response {
+  var jsonData = JSON.parse(responseBody);
+  
+  if (!jsonData.errors) {
+  //     pm.setGlobalVariable("LoggedInUserAuth0PrincipalId", jsonData.sub);
+  //     pm.setGlobalVariable("LoggedInUserEmail",jsonData.email);
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+}

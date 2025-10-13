@@ -1,0 +1,73 @@
+meta {
+  name: 53 |Query sync task to verify Csv missing columns
+  type: http
+  seq: 60
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks?take=20&skip=0
+  body: none
+  auth: inherit
+}
+
+params:query {
+  take: 20
+  skip: 0
+}
+
+headers {
+  accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Check for 'Failed' status", function () {
+  
+  var jsonData = res.getBody();
+    console.log(1);
+  const targetStatus = "Failed";
+  //const responseStatus = jsonData.data.attributes.status;
+  const responseStatus = jsonData.data[0].attributes.status;
+  const maxRetries = 40;
+  const retryInterval = 60000;
+    
+    
+  function sleep(ms) {
+    const start = Date.now();
+    while (Date.now() - start < ms) {}
+  }
+  
+  if ((responseStatus != targetStatus) && (responseStatus != "Completed")) {
+    console.log(2);
+      if (bru.getEnvVar("retryCount") == undefined) {
+          bru.setEnvVar("retryCount", 0);
+        sleep(retryInterval);
+        bru.setNextRequest(req.getName());
+        console.log(3);
+      } else {
+          const retryCount = parseInt(bru.getEnvVar("retryCount"));
+          bru.setEnvVar("retryCount", (retryCount + 1));
+          if (retryCount < maxRetries) {
+            console.log(4);
+                 sleep(retryInterval);
+                bru.setNextRequest(req.getName());
+            
+          } else {
+              console.log("Max retries reached. Target status not reached.");
+            console.log(5);
+              bru.deleteEnvVar("retryCount");
+  //  //           pm.execution.setNextRequest(null);
+          }
+      }
+  }
+          var responseData = res.getBody();
+           expect(targetStatus).to.equal(responseData.data[0].attributes.status);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

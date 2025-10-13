@@ -1,0 +1,56 @@
+meta {
+  name: 13 |Verify that the empty create sync generates the upload URL
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+  Idempotency-Key: {{$guid}}
+}
+
+body:json {
+  {
+      "data": {
+          "type": "SyncTask",
+          "attributes": {
+              "packageType": "partial"
+          }
+      }
+  }
+}
+
+script:post-response {
+  test("Created", function(){
+      expect(res.getStatus()).to.equal(201);
+  })
+  
+  var jsonData = res.getBody();
+  bru.setEnvVar("connectorSyncTaskId", jsonData.data.id);
+  bru.setEnvVar("connectorBlobUploadUrl", 
+          jsonData.included[0].attributes.uploadUrl);
+  bru.setEnvVar("connectorAttachmentId", 
+          jsonData.data.relationships.attachment.data.id);
+  
+  test("Response status code is 201", function () {
+      expect(res.getStatus()).to.equal(201);
+  });
+  
+  test("Should generate file upload url", function(){
+      var responseData = res.getBody();
+  // //    pm.expect(responseData.data.attributes.packageType).to.equal("Full");
+   expect(responseData.included[0].attributes.uploadUrl).to.include("https://");
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

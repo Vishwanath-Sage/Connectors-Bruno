@@ -1,0 +1,75 @@
+meta {
+  name: 48 |Upload zip having executable files only
+  type: http
+  seq: 41
+}
+
+put {
+  url: {{connectorBlobUploadUrl}}
+  body: file
+  auth: none
+}
+
+headers {
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+  x-ms-blob-type: BlockBlob
+}
+
+body:file {
+  file: @file(C:\Users\Puja.Kumari2\Downloads\ERPAutomation 1\ERPAutomation\executable.zip) @contentType(application/zip)
+}
+
+script:post-response {
+  test("Response status code is 201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+  
+  
+  // // pm.test("Response time is less than 2000ms", function () {
+  // //   pm.expect(pm.response.responseTime).to.be.below(2000);
+  // });
+  
+  
+  // // pm.test("Attributes object contains required fields", function () {
+  // //     const responseData = xml2Json(pm.response.text());
+      
+  // //     pm.expect(responseData).to.be.an('object');
+  // //     pm.expect(responseData.data.attributes).to.exist;
+  // //     pm.expect(responseData.data.attributes.status).to.exist;
+  // //     pm.expect(responseData.data.attributes.type).to.exist;
+  // //     pm.expect(responseData.data.attributes.message).to.exist;
+  // //     pm.expect(responseData.data.attributes.packageType).to.exist;
+  // //     pm.expect(responseData.data.attributes.stepName).to.exist;
+  // });
+  
+  
+  // // pm.test("Meta object exists and contains createdAt and modifiedAt fields", function () {
+  // //     const responseData = xml2Json(pm.response.text());
+  
+  // //     pm.expect(responseData).to.be.an('object');
+  // //     pm.expect(responseData.meta).to.exist;
+  // //     pm.expect(responseData.meta.createdAt).to.exist.and.to.be.a('string');
+  // //     pm.expect(responseData.meta.modifiedAt).to.exist.and.to.be.a('string');
+  // });
+  
+}
+
+settings {
+  encodeUrl: false
+}
+
+docs {
+  The API endpoint allows the user to upload a zip file using an HTTP PUT request. The request should include the zip file to be uploaded as the request body. The response will have a status code of 201 and a Content-Type of text/xml. The response body will contain data, attributes, relationships, and meta information related to the upload operation.
+  
+  The request body for the API call should include the zip file to be uploaded. The file should be included as the request body with the appropriate content type and format.
+  
+  For example:
+  
+  ```
+  {
+    "file": [file content]
+  }
+  
+   ```
+}

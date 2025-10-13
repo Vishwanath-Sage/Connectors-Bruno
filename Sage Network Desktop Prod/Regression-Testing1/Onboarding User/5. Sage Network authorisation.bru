@@ -1,0 +1,40 @@
+meta {
+  name: 5. Sage Network authorisation
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://
+  body: formUrlEncoded
+  auth: oauth2
+}
+
+headers {
+  Content-Type: application/x-www-form-urlencoded
+  Cookie: __cf_bm=8ILp6kipxhJx.bzhfft_TMU2wyXIHoe09FoAvgqCDHA-1705576945-1-AWMIFutymdC6ovzhSjcXyor7eqjmkyhJCesGrgiLEGFGwnYukkgg+2Tp2VWGwVj5QsIvS4swHGQD2u1OLUjUoCU=; did=s%3Av0%3Adb4d2310-b5f3-11ee-bfcc-918c56ccee10.1RBFJ%2FWRt28GBLTmi0jgDWJCvh69MZ6sx549sQzFHns; did_compat=s%3Av0%3Adb4d2310-b5f3-11ee-bfcc-918c56ccee10.1RBFJ%2FWRt28GBLTmi0jgDWJCvh69MZ6sx549sQzFHns
+  Accept: application/json
+}
+
+auth:oauth2 {
+  grant_type: authorization_code
+  callback_url: {{auth_callback_url}}
+  authorization_url: {{sageIdAuthURL}}/authorize?audience={{audience}}&context_hint={{contextHintEncoded}}&device=on Windows device GBC02GD2MKMD6R&acr_values=urn:sagecom:id:requireauthidentity&ui_locales=en-GB&nonce=1
+  access_token_url: {{sageIdAuthURL}}/oauth/token
+  refresh_token_url: {{sageIdAuthURL}}/oauth/token
+  client_id: {{auth_client_id}}
+  client_secret: 
+  scope: offline_access openid email
+  state: 
+  pkce: false
+  credentials_placement: body
+  credentials_id: credentials
+  token_placement: header
+  token_header_prefix: Bearer
+  auto_fetch_token: true
+  auto_refresh_token: false
+}
+
+settings {
+  encodeUrl: true
+}

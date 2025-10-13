@@ -1,0 +1,24 @@
+meta {
+  name: Delay for 1 min to receive payment
+  type: http
+  seq: 15
+}
+
+get {
+  url: https://postman-echo.com/get
+  body: none
+  auth: inherit
+}
+
+script:post-response {
+  const delay = ms => new Promise(res => setTimeout(res, ms));
+   
+  (async () => {
+      await delay(60000); // 60 seconds
+      bru.setNextRequest("Received-Payment - Seller");
+  })();
+}
+
+settings {
+  encodeUrl: true
+}

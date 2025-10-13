@@ -1,0 +1,37 @@
+meta {
+  name: Sync using ZIP file Partial Seller
+  seq: 6
+}
+
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik56TXdPVVJHTVVZNU5ERXpRelJHUVVNMVF6azJSa1U1UVRJMU0wRTROemhGUmpWQ04wSTNOQSJ9.eyJodHRwczovL3NhZ2UuY29tL3NjaS9pZHAiOiJDbG91ZElEIiwiaXNzIjoiaHR0cHM6Ly9pZC5zYWdlLmNvbS8iLCJzdWIiOiJhdXRoMHw5NzVmZTE2MTM0ODdkM2VjYjM0MGYzMmY4YzVlYzAxMjFlZjA5NTljYzM2ODRlNzIiLCJhdWQiOlsic25ldC1jbG91ZG9wcy9zYngvbmV0d29yay9hcGkiLCJodHRwczovL3NhZ2UtY2lkLXByb2Quc2FnZWlkcHJvZC5hdXRoMGFwcC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzYwMDEzOTYzLCJleHAiOjE3NjAwNDI3NjMsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJhenAiOiJIZFNXRlpYeExQRWFhbkh3UnNCN3FpalVRV3kzTHFTayJ9.EUVTqyFphrX3MEg2-JMSasUQEgP-s2pqp34qf1dQ-kVAUM61nOIWf3rKBKh19sEz3YQhCPMVsk_qRJiN-h5UyqiRI7CykmRFaE6oF2qW5gj0_xKfNUOcq9jmr69QDdk-eDHI7nyB6Hs56w_GD6JPYD9UHr2YHjLyeQ7buYt_pQY0d61DNQmszl6nxwlp5I3NsT7wqvsyiFhRUnYjD3DSk5HJdqLUeSr3rE_UgCVDCrU5xyNmlYftYeIg1y3h41Yaq-sZpzsEDV1Vkk74Y2OvChJXbB7ZLXoGDQuqbz16Qu8rmPaoOIc5IDNL-EHA-eeHTPrhdpkUIhUabvI3sfDbvw
+}
+
+docs {
+  ### Prerequisites
+  
+  There are two ways to sync data, either using zip files or a JSON body, this flow demonstrates the flow for importing a ZIP file.
+  
+  Before running requests within this folder ensure you have added authorization:
+  
+  1. Select the 'Sync using ZIP file' folder.
+  2. Open the 'Authorization' tab.
+  3. In the 'Current Token' section select available tokens.
+  4. Select the `Sage Network` token generated in step 5 of onboarding.
+      
+  
+  ⚠️ **Issue Alert:** We have a know issue where the Sage Network token will not authenticate requests into the sync endpoints. **Workaround**: For testing please use the Sage ID user token generated in step 1.
+  
+  ### Requests in this folder
+  
+  The sync using a zip file folder contains four steps:
+  
+  1. Create sync task: Creates a sync for the current dataset and returns a secure URL to upload the zip file.
+  2. Upload zip file: Uploads the zip file to URL returned in step 1 and returns a attachment Id.
+  3. Update sync task: Update sync task with the attachment Id of the zip file uploaded in step 2.
+  4. Query sync task: Check the status of your import.
+}

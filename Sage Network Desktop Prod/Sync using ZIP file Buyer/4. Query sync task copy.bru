@@ -1,0 +1,25 @@
+meta {
+  name: 4. Query sync task copy
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantIdBuyer}}/sync-tasks?skip=0&take=20&filter=operationType%20eq%20%27toNetwork%27%20and%20createdAt%20gt%202025-08-05T09:14:57.0930982Z
+  body: none
+  auth: inherit
+}
+
+params:query {
+  skip: 0
+  take: 20
+  filter: operationType%20eq%20%27toNetwork%27%20and%20createdAt%20gt%202025-08-05T09:14:57.0930982Z
+}
+
+headers {
+  accept: application/vnd.api+json
+}
+
+settings {
+  encodeUrl: false
+}

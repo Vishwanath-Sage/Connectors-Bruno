@@ -1,0 +1,52 @@
+meta {
+  name: Create Sync Task | Bad Request
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks
+  body: json
+  auth: inherit
+}
+
+headers {
+  Idempotency-Key: {{$guid}}
+  traceparent: 
+  tracestate: 
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+}
+
+body:json {
+  {
+      "data": {
+          "type": "123",
+          "attributes": {
+              "packageType": "Full"
+          }
+      }
+  }
+}
+
+script:post-response {
+  test("400 Bad Request", function(){
+      expect(res.getStatus()).to.equal(400);
+  })
+  
+  
+  test("Title is 'Invalid request parameters'", function () {
+      var response = res.getBody();
+      expect(response.errors[0].title).to.equal('Invalid request parameters');
+  });
+  test("Details should not be null", function () {
+      var response = res.getBody();
+      response.errors.forEach((error) => {
+          expect(error.detail).to.not.be.null;
+      });
+  });
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,15 @@
+meta {
+  name: credits
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{NetworkUrl}}/datasets/{{networkProductInstancesTenantId}}/credits
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

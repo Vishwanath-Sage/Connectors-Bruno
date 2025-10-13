@@ -1,0 +1,20 @@
+meta {
+  name: Query Sync Task List
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{sageNetworkBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantIdBuyer}}/sync-tasks?take=20&skip=0
+  body: none
+  auth: inherit
+}
+
+params:query {
+  take: 20
+  skip: 0
+}
+
+settings {
+  encodeUrl: false
+}

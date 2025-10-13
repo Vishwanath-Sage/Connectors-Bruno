@@ -1,0 +1,44 @@
+meta {
+  name: 58 DataSetID  Null of Create Empty Sync
+  type: http
+  seq: 74
+}
+
+post {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets//sync-tasks
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+  Idempotency-Key: {{$guid}}
+}
+
+body:json {
+  {
+      "data": {
+          "type": "SyncTask",
+          "attributes": {
+              "packageType": "partial"
+          }
+      }
+  }
+}
+
+script:post-response {
+  test("Not Created sync", function(){
+      expect(res.getStatus()).to.equal(404);
+  })
+  
+  
+  
+  
+  
+  
+}
+
+settings {
+  encodeUrl: true
+}

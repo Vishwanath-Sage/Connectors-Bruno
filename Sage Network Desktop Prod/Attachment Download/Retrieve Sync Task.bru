@@ -1,0 +1,19 @@
+meta {
+  name: Retrieve Sync Task
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{sageNetworkBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantIdBuyer}}/sync-tasks/6d6c850a-c13d-4fb8-903a-994a761c4a29?include=Details
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: Details
+}
+
+settings {
+  encodeUrl: true
+}

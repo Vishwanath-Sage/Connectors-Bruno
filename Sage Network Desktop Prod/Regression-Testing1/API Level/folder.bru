@@ -1,0 +1,27 @@
+meta {
+  name: API Level
+  seq: 3
+}
+
+auth {
+  mode: oauth2
+}
+
+auth:oauth2 {
+  grant_type: authorization_code
+  callback_url: https://jwt.io/
+  authorization_url: {{sageIdAuthURL}}/authorize?audience={{audience}}&context_hint={{contextHintEncoded}}&device=on Windows device GBC02GD2MKMD6R&acr_values=urn:sagecom:id:requireauthidentity&ui_locales=en-GB
+  access_token_url: {{sageIdAuthURL}}/oauth/token
+  refresh_token_url: {{sageIdAuthURL}}/oauth/token
+  client_id: {{auth_client_id}}
+  client_secret: 
+  scope: 
+  state: offline_access openid email
+  pkce: false
+  credentials_placement: body
+  credentials_id: credentials
+  token_placement: header
+  token_header_prefix: Bearer
+  auto_fetch_token: true
+  auto_refresh_token: false
+}

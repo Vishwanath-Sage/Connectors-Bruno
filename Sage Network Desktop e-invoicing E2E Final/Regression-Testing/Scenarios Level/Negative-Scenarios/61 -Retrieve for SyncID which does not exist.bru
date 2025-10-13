@@ -1,0 +1,31 @@
+meta {
+  name: 61 |Retrieve for SyncID which does not exist
+  type: http
+  seq: 77
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks/a4770ff8-8ed5-45dd-bb8b-f278845be84C?include=Details
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: Details
+}
+
+headers {
+  accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Incorrect sync id", function () {
+      expect(res.getStatus()).to.equal(404);
+  });
+  
+  
+}
+
+settings {
+  encodeUrl: true
+}

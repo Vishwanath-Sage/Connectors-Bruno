@@ -1,0 +1,46 @@
+meta {
+  name: Retrieve sync task to verify Verify sdkVersion, connectorVersion, productVersion
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks/{{connectorSyncTaskId}}?include=details
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: details
+}
+
+headers {
+  traceparent: 
+  tracestate: 
+  Accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  var jsonData = res.getBody();
+  
+  test("Check sdkVersion is not null", function () {
+      expect(jsonData.meta.source.sdkVersion).to.not.be.null;
+  });
+  
+  test("Connector version is not null", function () {
+      expect(jsonData.meta.source.connectorVersion).to.not.be.null;
+  });
+  
+  // Test for productVersion not being null
+  test("Product version is not null", function () {
+      expect(jsonData.meta.source.productVersion).to.not.be.null;
+  });
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,48 @@
+meta {
+  name: VALIDATION businesses (Organisation service)
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{organisationServiceURL}}/businesses/{{provisionAccountResponseBusinessId}}
+  body: none
+  auth: oauth2
+}
+
+params:query {
+  ~Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlJVUXlRME0wTWtOQk5rUkJOVGxETXpaQ056VXhPVVUyUkRZNU5EbEJOVVF6T0VSQk1EQXdNQSJ9.eyJpc3MiOiJodHRwczovL2lkLXNoYWRvdy5zYWdlLmNvbS8iLCJzdWIiOiJhdXRoMHwzMDg4Y2FlODQ2YTdiNDg1ZjRjYWJlZGZmNzBjNThlNDQ4NDQyMWI0ZTc0ZDE1NjYiLCJhdWQiOlsiU0JDRFMvZ2xvYmFsIiwiaHR0cHM6Ly9zYWdlLWNpZC1zaGFkb3cuc2FnZWlkbm9ucHJvZC5hdXRoMGFwcC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzA3NzMzNDA1LCJleHAiOjE3MDc3NjIyMDUsImF6cCI6IjJWVGtOekUzU3QzeVNoVmJaMmNubGtoUVZCVUh4dmVzIiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCB1c2VyOmZ1bGwgb2ZmbGluZV9hY2Nlc3MifQ.I0ihcbFj9SV_rqAcwUsUFUvjW_3E_kyO6nI_F-yufpXKi2Elppu3DK4N9224ysf2TFUuw6bas0lSLKNXYpnn4Qg4symdu2elGfckP7yLg8MYDqyBS-PNQ-3bisJuad0vGVpbImcgBPLmGxhVad2xQnmopOv_m2tpvDHOZ3eKbZZNMJnhNQAk2RyyvbC7yBGg1C_bHtbgtKFyC0yXxxwBCS-8mj_E-XzcfV9U_A_4DmFUX49rR48GxkjQMFSSTJZNYSUx8XAQwnNKFBBLmdvSKQ51Rcdbz42lGKr6Yhtre4aGEyrS3V1ihtVkmXLA8tiUpnEHvu0sC6qwyROpCXj4Sg
+}
+
+headers {
+  ~Impotency-key: {{$guid}}
+}
+
+auth:oauth2 {
+  grant_type: authorization_code
+  callback_url: https://jwt.io/
+  authorization_url: {{sageIdAuthURL}}/authorize
+  access_token_url: {{sageIdAuthURL}}/oauth/token
+  refresh_token_url: {{sageIdAuthURL}}/oauth/token
+  client_id: {{auth_client_id}}
+  client_secret: 
+  scope: offline_access openid email
+  state: 
+  pkce: false
+  credentials_placement: body
+  credentials_id: credentials
+  token_placement: header
+  token_header_prefix: 
+  auto_fetch_token: true
+  auto_refresh_token: false
+}
+
+script:post-response {
+  test("OK", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

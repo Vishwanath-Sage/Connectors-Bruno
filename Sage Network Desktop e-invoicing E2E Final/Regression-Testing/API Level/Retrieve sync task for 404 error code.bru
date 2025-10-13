@@ -1,0 +1,42 @@
+meta {
+  name: Retrieve sync task for 404 error code
+  type: http
+  seq: 16
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks/f9dc9240-8852-4Ab7-b262-6c02a3545269?include=Details
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: Details
+}
+
+headers {
+  Accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Response status code is 404", function () {
+      expect(res.getStatus()).to.equal(404);
+  });
+  
+  var jsonData = res.getBody();
+  
+  // Test for the operationType in the response
+  test("Title is eqaul to Not Found", function () {
+      expect(jsonData.errors[0].title).to.equal('Not found');
+  });
+  
+  // Test for the packageType in the response
+  test("details is equal to SyncId not exists in database", function () {
+      expect(jsonData.errors[0].detail).to.equal('SyncId not exists in database');
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+}

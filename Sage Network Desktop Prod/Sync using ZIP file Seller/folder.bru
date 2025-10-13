@@ -1,0 +1,56 @@
+meta {
+  name: Sync using ZIP file Seller
+  seq: 4
+}
+
+auth {
+  mode: oauth2
+}
+
+auth:oauth2 {
+  grant_type: authorization_code
+  callback_url: https://id.auth.sage.com/mobile
+  authorization_url: {{sageIdAuthURL}}/authorize?audience={{audience}}&context_hint={{contextHintEncoded}}&device=on Windows device GBC02GD2MKMD6R&acr_values=urn:sagecom:id:requireauthidentity&ui_locales=en-GB&nonce=1
+  access_token_url: {{sageIdAuthURL}}/oauth/token
+  refresh_token_url: 
+  client_id: {{auth_client_id}}
+  client_secret: 
+  scope: offline_access openid email
+  state: 
+  pkce: false
+  credentials_placement: body
+  credentials_id: credentials
+  token_placement: header
+  token_header_prefix: Bearer
+  auto_fetch_token: true
+  auto_refresh_token: false
+}
+
+docs {
+  ### Prerequisites
+  
+  There are two ways to sync data, either using zip files or a JSON body, this flow demonstrates the flow for importing a ZIP file.
+  
+  Before running requests within this folder ensure you have added authorization:
+  
+  1. Select the 'Sync using ZIP file' folder.
+      
+  2. Open the 'Authorization' tab.
+      
+  3. In the 'Current Token' section select available tokens.
+      
+  4. Select the `Sage Network` token generated in step 5 of onboarding.
+      
+  
+  ### Requests in this folder
+  
+  The sync using a zip file folder contains four steps:
+  
+  1. Create sync task: Creates a sync for the current dataset and returns a secure URL to upload the zip file.
+      
+  2. Upload zip file: Uploads the zip file to URL returned in step 1 and returns a attachment Id.
+      
+  3. Update sync task: Update sync task with the attachment Id of the zip file uploaded in step 2.
+      
+  4. Query sync task: Check the status of your import.
+}

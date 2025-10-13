@@ -1,0 +1,135 @@
+meta {
+  name: 4. Poll Provision Account
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{connectedBridgeURL}}/provision/account
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+  X-Idempotency-Key: {{provisionAccountIdempotency}}
+}
+
+body:json {
+  {
+      "User": {
+          "Email": "{{provisionAccountEmailBuyer}}", 
+          "FirstName": "{{$randomFirstName}}",
+          "LastName": "{{$randomLastName}}",
+          "Locale": "fr-FR"
+      },
+      "Account": {},
+      "ProductSubscription": {
+          "ManagingAccountId": "{{provisionAccountManagingAccountId}}",
+          "SubscriptionId": "{{provisionAccountSubscriptionId}}",
+          "Origin": "{{origin}}",
+          "BackOfficeId": "{{provisionAccountBackOfficeId}}", 
+          "BackOfficeSource": "{{STSProvider}}"
+      },
+  "ProductLicences": [{
+      "Product": "{{productCode}}",
+      "ProductLicenseType": "{{productLicenseType}}",
+      "Expires": "2025-03-12 10:38:14Z"
+      },
+   {"Product": "network",
+              "ProductLicenseType": "network-standard",
+              "Expires": "2030-01-01T00:00:00+00:00"
+      }],
+      "Licence": {
+              "Application": "{{STSApplication}}",
+              "Version": "{{STSVersion}}",
+              "Provider": "{{STSProvider}}",
+              "LicenceData": "{{STSLicenseData}}"
+      },
+      "Business": {
+          "Name": "{{provisionAccountName}}",
+          "ExternalId": "{{provisionAccountExternalId}}",
+          "ExternalSource": "Sage Desktop",
+          "RegisteredLocation": "FR",
+          "RegisteredCountry": "FR",
+          "BusinessAddress": {
+              "Type": "main",
+              "Line1": "Sage",
+              "Country": "FR"
+          },
+          "ProductInstance": {
+              "Name": "{{productCode}}",
+              "ProductCode": "{{productCode}}"
+          }
+     }  
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 202) {
+    console.log("Still provisioning… will retry automatically");
+  }
+  else if (res.getStatus() === 201) {
+    const data = res.getBody();
+    bru.setEnvVar("provisionAccountResponseAccountIdBuyer", data.AccountId);
+    bru.setEnvVar("provisionAccountResponseUserIdBuyer",    data.UserId);
+    bru.setEnvVar("provisionAccountResponseBusinessIdBuyer",data.BusinessId);
+  
+    const net = data.ProductInstances.find(p => p.ProductCode === 'network');
+    const tenantId = net ? net.TenantId : (() => { throw new Error("No network product!") })();
+  
+    bru.setEnvVar("networkProductInstancesIdBuyer",        net.Id);
+    bru.setEnvVar("networkProductInstancesTenantIdBuyer",  tenantId);
+    bru.setEnvVar("networkProductInstancesProductCodeBuyer", net.ProductCode);
+  
+    // now build your encoded context
+    const email = bru.getVar("provisionAccountEmailBuyer");
+    console.log ("email", email);
+    
+    const hint  = JSON.stringify({
+      TenantId: tenantId,
+      RoleIds:  ["erp"],
+      OwnerEmailHint: email
+    });
+    
+    console.log ("hint", hint)
+    bru.setEnvVar("contextHintEncodedBuyer", stringToBase32(hint));
+    bru.setVar("contextHintEncodedBuyer", stringToBase32(hint));
+  }
+  
+    console.log ("contextHintEncodedBuyer", bru.getVar("contextHintEncodedBuyer"));
+  
+  function stringToBase32(str) {
+      var base32chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+      var binString = '';
+      var pad = 0;
+      for (var i = 0; i < str.length; i++) {
+          var charCode = str.charCodeAt(i);
+          var bits = charCode.toString(2);
+          binString += leftpad(bits, 8, '0');
+      }
+      var base32String = '';
+      for (var j = 0; j < binString.length; j += 5) {
+          var chunk = binString.substr(j, 5);
+          if (chunk.length < 5) {
+              pad = 5 - chunk.length;
+              chunk += '0'.repeat(pad);
+          }
+          var index = parseInt(chunk, 2);
+          base32String += base32chars[index];
+      }
+      // Add padding if necessary
+      if (pad > 0) {
+          base32String += '='.repeat(pad);
+      }
+      return base32String;
+  }
+  function leftpad(str, len, pad) {
+      return len + 1 >= str.length && (str = new Array(len + 1 - str.length).join(pad) + str), str;
+  }
+  
+}
+
+settings {
+  encodeUrl: true
+}

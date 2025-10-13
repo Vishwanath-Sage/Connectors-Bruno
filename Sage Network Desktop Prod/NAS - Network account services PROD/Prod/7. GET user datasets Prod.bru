@@ -1,0 +1,82 @@
+meta {
+  name: 7. GET user datasets Prod
+  type: http
+  seq: 2
+}
+
+get {
+  url: https://api.nas.sage.com/datasets
+  body: json
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik56TXdPVVJHTVVZNU5ERXpRelJHUVVNMVF6azJSa1U1UVRJMU0wRTROemhGUmpWQ04wSTNOQSJ9.eyJpc3MiOiJodHRwczovL2lkLnNhZ2UuY29tLyIsInN1YiI6ImF1dGgwfDc1Mjk0ZWFkY2NkMzdlYTQzNjQ0NDRhYTA5N2YxNjYzZThmZWYwZjU5ZjJhZjZhOSIsImF1ZCI6WyJzbmV0LWNsb3Vkb3BzL25ldHdvcmsvYXBpIiwiaHR0cHM6Ly9zYWdlLWNpZC1wcm9kLnNhZ2VpZHByb2QuYXV0aDBhcHAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTcxNDAzNzQ3NSwiZXhwIjoxNzE0MDY2Mjc1LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGFsbCIsImF6cCI6IlNyUHBLekNnWTR1UzFmQU1JNzlzMzlYdGFYSDUxTGFFIn0.HfyGQXdA-Kmu29AT3A-9p9fL025GRlHiNCVMt7vCJXTJ8cRsqFLnrQs75gvyMdkA7LKIX91cz0qrxxIX-oUPVVydCpaC3SIPij8gC0lSDwCHZ720P2UtBHyp-1-EWjsYSAQyO4gO-iU-iC0dPritNJt5dXP8HWATz8gmsZp4-a9dC03qKqMDkilGLJr3y2sRjZyxc0Ll_kpc9oqALBIij3GbHdomxHABIrBjIe1q-9hoR3U0QeHcAo0vBGxtVRXatgj8KAHVyVxCOqeSDiX-J1L545c-1E2BTBfWfsTs9YPvzJSOmkzv0Bzpk_gaSDtcHI-aLlH6TM0_euaouByeCg
+}
+
+script:post-response {
+  var jsonData = JSON.parse(responseBody);
+  
+  test("Validate Response", () => {
+    const statusCode = expect(res.getStatus()).to.equal(); // Obtain status code
+    console.log("Response Status Code:", statusCode);
+  
+    if (statusCode === 200) {
+      // Assertions for successful response
+      test("Compare Account ID", () => {
+      
+        expect(res.getBody().data[0].relationship.account.data.id).to.eq(bru.getEnvVar("AccountId")); // Corrected path Account ID
+        console.log("Account ID:", res.getBody().data[0].relationship.account.data.id);
+    
+      });
+      test("Compare Tenant ID", () => {
+          expect(res.getBody().data[0].id).to.eq(bru.getEnvVar("TenantId"));
+          console.log("Tenant ID:", res.getBody().data[0].id);
+      });
+      test("Top Level Keys", () => {
+          const keys = res.getBody().keys();
+          expect(keys).to.include("meta", "data", "links");
+      });
+      test("Dataset Object Structure", () => { 
+          const data = res.getBody().data[0];
+          expect(data).to.have.property("type", "Dataset");
+          expect(data).to.have.property("id");
+          expect(data).to.have.property("attributes");
+          expect(data).to.have.property("relationship");
+          expect(data).to.have.property("meta");
+      });
+      test("Dataset type Validation", () => {      
+          const name = res.getBody().data[0].type.name;
+          expect(name).to.equal("Dataset");
+      });
+      test("Pagination Link Exists", () => {
+          const links = res.getBody().links;
+          expect(links).to.have.property("self");
+      });
+      if(jsonData){
+      bru.setEnvVar("dataset_id_nds", jsonData.data[0].id);  
+      }
+      expect(responseBody).to.be.an('array').and.to.have.length.of.at.least(1);
+        // Log the array content
+      console.log("Array:", array);
+    } else if (statusCode === 400) {
+      // Assertions for 400 error (refer to previous section)
+    } else if (statusCode === 401) {
+      test("Unauthorized Error Message", () => {
+        const data = res.getBody(); // Extract JSON data for 401 response
+        expect(data).to.have.property("message", "Unauthorized");
+      });
+    } else if (statusCode === 404) {
+      expect(responseBody).to.be.an('object').and.to.have.length.of.at.least(1);
+      // Log the object content
+      console.log("Object:", object);
+      expect(data).to.have.property("message", "Not Found");
+    } else {
+      expect.fail("Unexpected status code: " + statusCode);
+    }
+  });
+}
+
+settings {
+  encodeUrl: true
+}

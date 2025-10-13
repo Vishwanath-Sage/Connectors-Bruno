@@ -1,0 +1,49 @@
+meta {
+  name: M2M Org Service
+  type: http
+  seq: 2
+}
+
+post {
+  url: https://id-shadow.sage.com/oauth/token
+  body: formUrlEncoded
+  auth: none
+}
+
+headers {
+  Content-Type: application/x-www-form-urlencoded
+}
+
+body:form-urlencoded {
+  grant_type: client_credentials
+  client_id: pf4xvrvVkAY05HfIPL9Fjj0aMYKjWI91
+  client_secret: YwKSALLjedXB27uswjRn2MoFByfalQGypwheomYlQbItxssBCUQvYdzJGTYDP7M6
+  audience: SBCDS/global
+}
+
+script:post-response {
+  // Grab parsed JSON response
+  const body = res.getBody();
+  
+  // Save the access token for follow-up requests
+  if (body && body.access_token) {
+    bru.setVar("jwtCloudId", body.access_token);
+    
+  }
+  
+  // Compute and save absolute expiry time (ISO string)
+  if (body && body.expires_in) {
+    const expiresAt = new Date(Date.now() + body.expires_in * 1000).toISOString();
+    bru.setVar("jwtCloudIdExpires", expiresAt);
+    
+  }
+  
+  // (optional) sanity check
+  test("Token response looks OK", function () {
+    expect(res.getStatus()).to.be.oneOf([200, 201]);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,0 +1,62 @@
+meta {
+  name: Update Sync task to verify Verify sdkVersion, connectorVersion, productVersion
+  type: http
+  seq: 11
+}
+
+patch {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks?take=20&skip=0
+  body: json
+  auth: inherit
+}
+
+params:query {
+  take: 20
+  skip: 0
+}
+
+headers {
+  Idempotency-Key: {{$guid}}
+  traceparent: 
+  tracestate: 
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+}
+
+body:json {
+  {
+      "data": {
+          "type": "synctask",
+          "id": "{{connectorSyncTaskId}}",
+          "attributes": {
+              "summary": {
+                  "totalInvoices": 0,
+                  "totalPayments": 0,
+                  "totalCompanies": 0,
+                  "totalContacts": 0,
+                  "totalGlAccounts": 0,
+                  "totalGlAccountEntries": 0,
+                  "totalCustomFields": 0
+              }
+          },
+          "relationships": {
+              "attachment": {
+                  "data": {
+                      "id": "{{connectorAttachmentId}}",
+                      "type": "attachment"
+                  }
+              }
+          }
+      }
+  }
+}
+
+script:post-response {
+  test("Response code is 202", function () {
+      expect(res.getStatus()).to.equal(202);
+  });
+}
+
+settings {
+  encodeUrl: true
+}

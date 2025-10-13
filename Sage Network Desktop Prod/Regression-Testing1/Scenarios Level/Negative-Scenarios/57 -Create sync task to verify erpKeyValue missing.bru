@@ -1,0 +1,47 @@
+meta {
+  name: 57 |Create sync task to verify erpKeyValue missing
+  type: http
+  seq: 73
+}
+
+post {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+  Idempotency-Key: {{$guid}}
+}
+
+body:json {
+  {
+      "data": {
+          "type": "SyncTask",
+          "attributes": {
+              "packageType": "Full"
+          }
+      }
+  }
+}
+
+script:post-response {
+  test("Created", function(){
+      expect(res.getStatus()).to.equal(201);
+  })
+  
+  var jsonData = res.getBody();
+  bru.setEnvVar("connectorSyncTaskId", jsonData.data.id);
+  bru.setEnvVar("connectorBlobUploadUrl", 
+          jsonData.included[0].attributes.uploadUrl);
+  bru.setEnvVar("connectorAttachmentId", 
+          jsonData.data.relationships.attachment.data.id);
+  
+  
+}
+
+settings {
+  encodeUrl: true
+}

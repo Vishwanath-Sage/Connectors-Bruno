@@ -1,0 +1,34 @@
+meta {
+  name: Cloud ID Token Connector
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://{{cloudid_domain}}/oauth/token
+  body: formUrlEncoded
+  auth: inherit
+}
+
+body:form-urlencoded {
+  grant_type: client_credentials
+  client_id: {{client_id_connector_m2m}}
+  client_secret: {{client_secret_connector_m2m}}
+  audience: {{audience_connector_m2m}}
+}
+
+script:post-response {
+  var jsonData =res.getBody();
+  bru.setEnvVar("m2m_jwt_connector", jsonData.access_token);
+  
+  const delayInterval = 5000; // Time interval between retries in milliseconds (10000ms = 10 seconds)
+  setTimeout(() => {
+      test("OK", function () {
+      expect(res.getStatus()).to.equal(200);
+      });
+  }, delayInterval);
+}
+
+settings {
+  encodeUrl: true
+}

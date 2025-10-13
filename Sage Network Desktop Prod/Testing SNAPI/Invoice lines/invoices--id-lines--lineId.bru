@@ -1,0 +1,20 @@
+meta {
+  name: invoices/:id/lines/:lineId
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{NetworkUrl}}/datasets/{{networkProductInstancesTenantId}}/invoices/:id/lines/:lineId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: 09877a35-1376-4f56-892e-00103fdb6972
+  lineId: 
+}
+
+settings {
+  encodeUrl: true
+}

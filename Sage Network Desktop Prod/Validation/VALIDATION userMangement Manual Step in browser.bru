@@ -1,0 +1,23 @@
+meta {
+  name: VALIDATION userMangement Manual Step in browser
+  type: http
+  seq: 4
+}
+
+options {
+  url: https://app.sbc.sage.com/settings/user-management/users?tid={{networkProductInstancesTenantId}}
+  body: json
+  auth: inherit
+}
+
+params:query {
+  tid: {{networkProductInstancesTenantId}}
+}
+
+body:json {
+   {"BusinessId":"{{provisionAccountResponseBusinessId}}","RoleIds":["db5ff0b3-0dc9-4888-814d-a45899a62249"],"OwnerHint":"{{provisionAccountEmail}}"}
+}
+
+settings {
+  encodeUrl: true
+}

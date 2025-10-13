@@ -1,0 +1,50 @@
+meta {
+  name: Create Sync Task | Unauthorized
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks
+  body: json
+  auth: bearer
+}
+
+headers {
+  Idempotency-Key: {{$guid}}
+  traceparent: 
+  tracestate: 
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkdoSWRxS2JCZld5UTNoeWs1Wmd3MiJ9.eyJodHRwczovL3NhZ2UuY29tL3NjaS9hemkiOiI4ODJmNzc4NTcwM2IwMzJmMmJmYmFlODE2NzMyY2VhZDhmN2YxZmNjZGEyZSIsImh0dHBzOi8vc2FnZS5jb20vc2NpL2F6biI6Im9uV2luZG93c2RldmljZUdCIiwiaXNzIjoiaHR0cHM6Ly9pZC5hdXRoLXNoYWRvdy5zYWdlLmNvbS8iLCJzdWIiOiJhdXRoMHxhemlfODgyZjc3ODU3MDNiMDMyZjJiZmJhZTgxNjczMmNlYWQ4ZjdmMWZjY2RhMmUiLCJhdWQiOlsic25ldC1kZXYvbmV0d29yay9hcGkiLCJodHRwczovL3NhZ2UtYXV0aC1zaGFkb3cuc2FnZWlkbm9ucHJvZC5hdXRoMGFwcC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzQ1Mzk1OTE4LCJleHAiOjE3NDU0MjQ3MTgsInNjb3BlIjoib3BlbmlkIGVtYWlsIG9mZmxpbmVfYWNjZXNzIiwiZ3R5IjoicGFzc3dvcmQiLCJhenAiOiJtemVWQ09pSWlUejllZFY2OXVxdjBKOEdMQzVXR2I4RSJ9.TSVpajsigqpUpHKlP4Akd906jP6uQQhFgmXWxjjLFuPE48TEWc3PQSOfKL10iy3kF8yEH_4BSZ15Um3F8N1EwYTFQLzAn1ELzS1m0DqRHVBS_Ky8Yzajb4stKpYR2smGRYkqs6y-cgk8RY4JfapJ5aopH_ZpNnmkkoj52V553Q9JIvYouQQBryO3hGixqksDugmCDJ9F0PY33RBDJnFRBbt8isAzmXBLJ5jdzKSx0va72uVRaelR6Ak70535p1dTHZi-zd_HReSdLMv4ssn8C6P7uqDYeBEygVNos_4HqNDg0o40sCpFq_zm2p-8nLHaulgZg_z2gSUChFkV3MD45g
+}
+
+body:json {
+  {
+      "data": {
+          "type": "Sync",
+          "attributes": {
+              "packageType": "Full"
+          }
+      }
+  }
+}
+
+script:post-response {
+  test("401 UnAautorized", function(){
+      expect(res.getStatus()).to.equal(401);
+  })
+  test("Title is equal to Unauthorized", function () {
+      expect(res.getBody().errors[0].title).to.equal("Unauthorized");
+  });
+  test("Title is not null", function () {
+      expect(res.getBody().errors[0].title).to.not.be.null;
+  });
+}
+
+settings {
+  encodeUrl: true
+}

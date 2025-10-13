@@ -1,0 +1,70 @@
+meta {
+  name: Get workflowStatusId5 - Buyer
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{sageNetworkBaseUrl}}/api/v1/Invoices/query?order=modified desc
+  body: none
+  auth: inherit
+}
+
+params:query {
+  order: modified desc
+}
+
+headers {
+  accept: application/vnd.api+json
+  X-Group-Key: {{networkProductInstancesTenantIdBuyer}}
+  Authorization: Bearer {{m2m_jwt_connector}}
+}
+
+script:post-response {
+  test("Status code 200", function() {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Check workflowStatusId ", function () {
+  const targetStatus = "00000000-0000-0000-0000-900000000001";
+  const responseStatus = res.getBody().records[0].workflowStatusId;
+  const responseStatus1 = res.getBody().workflowStatusId; // Get the current response status
+  const maxRetries = 10;  // You can adjust the number of retries based on your needs
+  const retryInterval = 10000; // Time interval between retries in milliseconds (10000ms = 10 seconds)
+  
+  // Initialize or increment the retry counter
+  if (bru.getEnvVar("retryCount") == undefined) {
+      bru.setEnvVar("retryCount", 0);
+  } else {
+      const retryCount = parseInt(bru.getEnvVar("retryCount"));
+      bru.setEnvVar("retryCount", (retryCount + 1));
+  }
+  
+  // Check if the response status matches the target status
+  if (responseStatus == targetStatus || responseStatus1 == targetStatus) {
+      console.log("Target status reached: " + targetStatus);
+      bru.deleteEnvVar("retryCount"); // Clear the retry count if the target status is reached
+  } else {
+      const retryCount = parseInt(bru.getEnvVar("retryCount"));
+      if (retryCount < maxRetries) {
+          // Re-send the request after the specified interval
+          setTimeout(() => {
+              console.log("Retrying request: attempt " + retryCount);
+              bru.runner.setNextRequest(req.getName()); // Re-run the same request
+          }, retryInterval);
+      } else {
+          console.log("Max retries reached. Target status not reached.");
+          bru.deleteEnvVar("retryCount"); // Clear the retry count if max retries are reached
+  //      //   pm.execution.setNextRequest(null); // Stop executing collection
+      }
+      
+  expect([responseStatus, responseStatus1]).to.include(targetStatus);
+  
+  }
+  
+  });
+}
+
+settings {
+  encodeUrl: true
+}
