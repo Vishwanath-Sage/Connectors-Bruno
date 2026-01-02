@@ -1,0 +1,24 @@
+meta {
+  name: Retrieve sync
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/portal/sync-tasks/{{connectorSyncTaskId}}?include=Details
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: Details
+}
+
+headers {
+  Authorization: Bearer eyJraWQiOiJiQXJ0dG1YYjF3eklIekFXdkdmNWFLbVRiNVVBQ08zZ1VpaXZFdWxzY1dBPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI0MmZmMDczOC1jNjY3LTRjNWItOGNjYy0wZWI2NTRmNTcyYzkiLCJjb2duaXRvOmdyb3VwcyI6WyJTTlBDb25uZWN0b3JzLUFkbWluR3JvdXAiLCJldS13ZXN0LTFfeXNxd2JCNlF5X0F6dXJlQUQiLCJTTlBDb25uZWN0b3JzLVJlZ3VsYXJHcm91cCJdLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtd2VzdC0xLmFtYXpvbmF3cy5jb21cL2V1LXdlc3QtMV95c3F3YkI2UXkiLCJ2ZXJzaW9uIjoyLCJjbGllbnRfaWQiOiIyNDJjNWVmNm5hcmpic3Q2ZWFpZHNqcDRlIiwidG9rZW5fdXNlIjoiYWNjZXNzIiwic2NvcGUiOiJvcGVuaWQiLCJhdXRoX3RpbWUiOjE3NjY5OTE2NjYsImV4cCI6MTc2NzAzNDg2NiwiaWF0IjoxNzY2OTkxNjY2LCJqdGkiOiJiODUwYzU4OC0wZjU4LTQ0YWQtODQ1Mi1iNjIyOTQzOTlmZDkiLCJ1c2VybmFtZSI6ImF6dXJlYWRfcHVqYS5rdW1hcmkyQHNhZ2UuY29tIn0.OKMvhNypmO3RUr0eS7I6UtxaQi_i-F72ZD8CWEH7CtWWNnOCOYjqmZKkMtIrQ411LQwF-gjJVl9xEyleriyG2LZ8L6wDwcLwLbtZXWbjOcy-xPyLiFNotnEhd6QLsW65cFYqDA6U_m9YYgsBSjc-gtQYj0KHw6xZCgznmJ7AqCcUA4QMeYE-TMmNdCzUQq19d3ofLcL93Z4k11SCvrxLnSb4Kbl6IcbhdGfcyn-sMGXyMbX6_rz4D-YQHPgpM5IsTEKe2ZunN0OObxWe3UP5M3WdcchdC9I-cbdqPJscfUBIhjiD9czIP5CFxq4oxIrDeJKx-d4TQne7lgOruBxTGQ
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
