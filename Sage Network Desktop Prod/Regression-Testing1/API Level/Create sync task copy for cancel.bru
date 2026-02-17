@@ -1,0 +1,146 @@
+meta {
+  name: Create sync task copy for cancel
+  type: http
+  seq: 19
+}
+
+post {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks
+  body: json
+  auth: inherit
+}
+
+params:query {
+  ~: 
+}
+
+headers {
+  Idempotency-Key: {{$guid}}
+  traceparent: 
+  tracestate: 
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+}
+
+body:json {
+  {
+      "data": {
+          "type": "SyncTask",
+          "attributes": {
+              "packageType": "Full"
+          }
+      }
+  }
+}
+
+script:post-response {
+  test("Created", function(){
+      expect(res.getStatus()).to.equal(201);
+  })
+  
+  // Test for checking the sync task is always created
+  test("Id is not null",function(){
+     const responseData=res.getBody();
+     expect(responseData.data.id).to.not.be.null;
+  });
+  // Test for checking the type 'SyncTask' in the response
+  test("type = 'SyncTask'", function () {
+      const responseData = res.getBody();
+      expect(responseData.data.type).to.equal('SyncTask');
+  });
+  // Test for checking the size of the ID is equal to 36
+  test("Size of ID is equal to 36", function () {
+      const responseData = res.getBody();
+      const id = responseData.data.id;
+      expect(id.length).to.equal(36);
+  });
+  // // Test for checking the status is equal to 'Awaiting'
+  test("Status is equal to 'Awaiting'", function () {
+      const responseData = res.getBody();
+      expect(responseData.data.attributes.status).to.equal('Awaiting');
+  });
+  // // Test for checking the message is equal to 'Sync-Task request has been created'
+  test("Message is equal to 'Sync-Task request has been created'", function () {
+      const responseData = res.getBody();
+      expect(responseData.data.attributes.message).to.equal('Sync-Task request has been created');
+  });
+   test("Package type is 'Full'", function () {
+      const responseData = res.getBody();
+      expect(responseData.data.attributes.packageType).to.equal('Full');
+  });
+   // Test for checking the attachment ID is not null and its size is equal to 36
+   test("Attachment ID is not null and its size is equal to 36 and type is equal to attachment", function () {
+      const responseData = res.getBody();
+      const attachmentId = responseData.included[0].id;
+      expect(attachmentId).to.not.be.null;
+      expect(attachmentId.length).to.equal(36);
+      expect(responseData.included[0].type).to.equal('Attachment');
+  });
+   // Test for checking uploadURL is not blank and starts with 'https', file location is not not blank, fileName is equal to 'file.zip', and attachmentType is equal to 'SyncPackage'
+  test("Attachment details are valid", function () {
+      const responseData = res.getBody();
+      const uploadUrl = responseData.included[0].attributes.uploadUrl;
+      const fileLocation = responseData.included[0].attributes.fileLocation;
+      const fileName = responseData.included[0].attributes.fileName;
+      const attachmentType = responseData.included[0].attributes.attachmentType;
+  
+      expect(uploadUrl).to.not.be.empty;
+      expect(uploadUrl).to.match(/^https:/);
+      expect(fileLocation).to.not.be.empty;
+      expect(fileName).to.equal('file.zip');
+      expect(attachmentType).to.equal('SyncPackage');
+  });
+  
+  var jsonData = res.getBody();
+  bru.setEnvVar("connectorSyncTaskId", jsonData.data.id);
+  bru.setEnvVar("connectorBlobUploadUrl", 
+          jsonData.included[0].attributes.uploadUrl);
+  bru.setEnvVar("connectorAttachmentId", 
+          jsonData.data.relationships.attachment.data.id);
+  // Test to check if the stepName is equal to 'Preparing'
+  test("Step name is equal to 'Preparing'", function () {
+      const responseData = res.getBody();
+      expect(responseData.data.attributes.stepName).to.equal('Preparing');
+  });
+  test("Attempts is equal to 0", function () {
+      const responseData = res.getBody();
+      expect(responseData.data.attributes.attempts).to.equal(0);
+  });
+  // Test to check if the modifiedAt contains today's date
+  test("ModifiedAt contains today's date", function () {
+      const responseData = res.getBody();
+      const modifiedAtDate = new Date(responseData.meta.modifiedAt).toDateString();
+      const todayDate = new Date().toDateString();
+      expect(modifiedAtDate).to.equal(todayDate);
+  });
+  // Test to check if the operationType is equal to 'ToNetwork'
+  test("OperationType is equal to 'ToNetwork'", function () {
+      const responseData = res.getBody();
+      expect(responseData.data.attributes.operationType).to.equal('ToNetwork');
+  });
+  // Test to check if the response body contains the extension '.zip'
+  test("Response body contains the extension '.zip'", function () {
+      const responseData = res.getBody();
+      const included = responseData.included[0];
+      const extension = included.attributes.extension;
+      expect(extension).to.equal('.zip');
+  });
+  // Test to check if the createdAt contains today's date
+  test("CreatedAt contains today's date", function () {
+      const responseData = res.getBody();
+      const createdAtDate = new Date(responseData.meta.createdAt).toDateString();
+      const todayDate = new Date().toDateString();
+      expect(createdAtDate).to.equal(todayDate);
+  });
+  // Test to check if the type is equal to 'Attachment relationships'
+  test("Type is equal to 'Attachment relationships'", function () {
+      const responseData = res.getBody();
+      const type = responseData.data.relationships.attachment.data.type;
+      expect(type).to.equal('Attachment');
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

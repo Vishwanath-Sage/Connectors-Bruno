@@ -1,0 +1,44 @@
+meta {
+  name: Get empty tenant summary
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Response status code is 404", function () {
+      expect(res.getStatus()).to.equal(404);
+  });
+  
+  var jsonData = res.getBody();
+  
+  // Test for the Title in the response
+  test("Title is eqaul to Not Found", function () {
+      expect(jsonData.errors[0].title).to.equal('Not found');
+  });
+  
+  // Test for the details in the response
+  test("details is equal to No Tenant summary details found", function () {
+      expect(jsonData.errors[0].detail).to.equal('No Tenant summary details found');
+  });
+  
+  // Test for the status in the response
+  test("status is eqaul to 404", function () {
+      expect(jsonData.errors[0].status).to.equal(404);
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

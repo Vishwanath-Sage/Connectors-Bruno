@@ -1,0 +1,73 @@
+meta {
+  name: Update cancelled sync
+  type: http
+  seq: 25
+}
+
+patch {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks?take=20&skip=0
+  body: json
+  auth: inherit
+}
+
+params:query {
+  take: 20
+  skip: 0
+}
+
+headers {
+  Idempotency-Key: {{$guid}}
+  traceparent: 
+  tracestate: 
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+}
+
+body:json {
+  {
+      "data": {
+          "type": "SyncTask",
+          "id": "{{connectorSyncTaskId}}",
+          "attributes": {
+              "summary": {
+                  "totalInvoices": 0,
+                  "totalPayments": 0,
+                  "totalCompanies": 0,
+                  "totalContacts": 0,
+                  "totalGlAccounts": 0,
+                  "totalGlAccountEntries": 0,
+                  "totalCustomFields": 0
+              }
+          },
+          "relationships": {
+              "attachment": {
+                  "data": {
+                      "id": "{{connectorAttachmentId}}",
+                      "type": "Attachment"
+                  }
+              }
+          }
+      }
+  }
+}
+
+script:post-response {
+  test("Response code is 409", function () {
+      expect(res.getStatus()).to.equal(409);
+  });
+  // Test for response body schema
+  test("Title is equal to Invalid request", function () {
+      var responseBody = res.getBody();
+      expect(responseBody.errors[0].title).to.equal('Invalid request');
+  });
+  
+  test("Details is equal to 'This sync task has already been canceled; updating the sync operation is not allowed.'", function () {
+      var responseBody = res.getBody();
+      expect(responseBody.errors[0].detail).to.equal('This sync task has already been canceled; updating the sync operation is not allowed.');
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

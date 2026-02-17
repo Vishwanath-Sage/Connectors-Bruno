@@ -1,0 +1,43 @@
+meta {
+  name: Retrieve sync for 401 error code
+  type: http
+  seq: 17
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/eb33ede1-9a9f-a249-b8b0-b1acb48bc6a22/sync-tasks/{{connectorSyncTaskId}}?include=Details
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: Details
+}
+
+headers {
+  Accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Response status code is 401", function () {
+      expect(res.getStatus()).to.equal(401);
+  });
+  
+  var jsonData = res.getBody();
+  
+  // Test for the operationType in the response
+  test("Title is eqaul to Unauthorized", function () {
+      expect(jsonData.errors[0].title).to.equal('Unauthorized');
+  });
+  
+  // Test for the packageType in the response
+  test("details is equal to Missing required claims for authorization.", function () {
+      expect(jsonData.errors[0].detail).to.equal('DatasetId claim not found in principal');
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,115 @@
+meta {
+  name: Query Cancelled Sync
+  type: http
+  seq: 27
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks?take=20&skip=0
+  body: none
+  auth: inherit
+}
+
+params:query {
+  take: 20
+  skip: 0
+}
+
+headers {
+  traceparent: 
+  tracestate: 
+  Accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Check for 'Cancelled' status", function () {
+    console.log(1);
+  const targetStatus = "Cancelled";
+  var responseData = res.getBody();
+  expect(targetStatus).to.equal(responseData.data[0].attributes.status);
+  });
+  
+  test("OperationType is 'ToNetwork'", function () {
+    res.getBody().data.forEach(function(task) {
+      expect(task.attributes.operationType).to.equal('ToNetwork');
+    });
+  });
+  
+  test("Message attribute is equal to 'Sync task has been canceled'", function () {
+     var responseBody = res.getBody();
+      expect(responseBody.data[0].attributes.message).to.equal('Sync task has been canceled');
+  });
+  
+  test("Each synchronization task has 'attempts' attribute equal to 0", function () {
+    res.getBody().data.forEach(function(task) {
+      expect(task.attributes.attempts).to.equal(0);
+    });
+  });
+  
+  test("Type attribute is equal to 'SyncTask'", function () {
+      res.getBody().data.forEach(function(task) {
+          expect(task.type).to.equal('SyncTask');
+      });
+  });
+  test("Each synchronization task has 'id' attribute with a length of 36 bits", function () {
+      res.getBody().data.forEach(function(task) {
+          expect(task.id).to.have.lengthOf(36);
+      });
+  });
+  test("PackageType attribute is equal to 'Full'", function () {
+      var responseBody = res.getBody();
+      expect(responseBody.data[0].attributes.packageType).to.equal('Full');
+  });
+  
+  test("Each synchronization task has 'stepName' attribute equal to 'Finalized'", function () {
+       const responseData = res.getBody().data[0];
+          expect(responseData.attributes.stepName).to.equal('Finalized');
+  
+  });
+  
+  // Test to check if the createdAt and modifiedAt attributes contain today's date
+  test("CreatedAt and modifiedAt attributes contain today's date", function () {
+      const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+      const responseData = res.getBody().data;
+  
+      responseData.forEach((item) => {
+          const createdAt = item.meta.createdAt.split('T')[0];
+          const modifiedAt = item.meta.modifiedAt.split('T')[0];
+          expect(createdAt).to.equal(today);
+          expect(modifiedAt).to.equal(today);
+      });
+  });
+  var responseData = res.getBody().data;
+  
+  test("Product attribute is not null and not equal to 'Unassigned'", function () {
+      responseData.forEach(function(task) {
+          expect(task.attributes.product).to.not.be.null.and.to.not.equal('Unassigned');
+      });
+  });
+  var responseJSON = res.getBody();
+  
+  // Check for presence of objectType property
+  test("Response contains an object with objectType equal to 'syncs'", function () {
+      expect(responseJSON.data).to.be.an('array').that.is.not.empty;
+      responseJSON.data.forEach(function(task) {
+          expect(task.meta).to.have.property('objectType', 'syncs');
+      });
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
+
+docs {
+  This endpoint makes an HTTP GET request to retrieve synchronization tasks for the 'Accounting Data' dataset. The request includes query parameters for pagination, with a 'take' parameter to specify the number of records to retrieve and a 'skip' parameter to indicate the number of records to skip.
+  
+  The response returns a status code of 200 and a content type of 'application/vnd.api+json'. The response body contains an array of synchronization task objects, each with attributes such as attempts, status, operation type, message, package type, step name, dataset ID, product, process start date, process end date, and next run date. Additionally, the response includes relationships with various data entities such as companies, contacts, invoices, invoice lines, payments, and more.
+  
+  Each synchronization task object also includes metadata such as validation status, creation and modification timestamps, SDK version, connector version, product version, and model version.
+}

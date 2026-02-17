@@ -1,0 +1,87 @@
+meta {
+  name: Get tenant sync summary
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  var jsonData = res.getBody();
+  
+  test("Size of product ID is equal to 36", function () {
+      const responseData = res.getBody();
+      const id = responseData.data.attributes.productId;
+      expect(id.length).to.equal(36);
+  });
+  
+  test("Product field is not null and does not equal 'Unassigned'", function () {
+      expect(jsonData.data.attributes.productName).to.not.be.null;
+      expect(jsonData.data.attributes.productName).to.not.equal('Unassigned');
+  });
+  
+  test("fullSyncCount is not null and partialSyncCount is not equal null", function () {
+      expect(jsonData.data.attributes.fullSyncCount).to.not.be.null;
+      expect(jsonData.data.attributes.partialSyncCount).to.not.be.null;
+  });
+  
+  test("lastSeen field contains today's date", function () {
+      var lastSeen = jsonData.data.attributes.lastSeen;
+      var lastSeenDate = lastSeen.split('T')[0];
+      var today = new Date().toISOString().split('T')[0];
+      expect(lastSeenDate).to.equal(today);
+  });
+  
+  // test("licenseStatust is equal Active", function () {
+  //     expect(jsonData.data.attributes.licenseStatus).to.equal("Active");
+  // });
+  
+  test("integrationMode is equal Live", function () {
+      expect(jsonData.data.attributes.integrationMode).to.equal("Live");
+  });
+  
+  test("Size of ID is equal to 36", function () {
+      const responseData = res.getBody();
+      const id = responseData.data.id;
+      expect(id.length).to.equal(36);
+  });
+  
+  test("type = Dataset", function () {
+      const responseData = res.getBody();
+      const type = responseData.data.type;
+      expect(type).to.equal("Dataset");
+  });
+  
+  
+  
+  test("createdAt field contains today's date", function () {
+      var createdAt = jsonData.meta.createdAt;
+      var createdAtDate = createdAt.split('T')[0];
+      var today = new Date().toISOString().split('T')[0];
+      expect(createdAtDate).to.equal(today);
+  });
+  
+  test("modifiedAt field contains today's date", function () {
+      var modifiedAt = jsonData.meta.modifiedAt;
+      var modifiedAtDate = modifiedAt.split('T')[0];
+      var today = new Date().toISOString().split('T')[0];
+      expect(modifiedAtDate).to.equal(today);
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

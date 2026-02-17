@@ -1,0 +1,61 @@
+meta {
+  name: Get last sync, last completed,last failed sync
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}?include=syncs
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: syncs
+}
+
+headers {
+  Accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  var jsonData = res.getBody();
+  
+  test("Size of last sync ID is equal to 36", function () {
+      const id = jsonData.data.relationships.lastSync.id;
+      expect(id.length).to.equal(36);
+  });
+  
+  test("type of last SyncTask", function () {
+      const type =  jsonData.data.relationships.lastSync.type;
+      expect(type).to.equal("SyncTask");
+  });
+  
+  test("Size of last completed sync ID is equal to 36", function () {
+      const id = jsonData.data.relationships.lastSync.id;
+      expect(id.length).to.equal(36);
+  });
+  
+  test("type of last completed SyncTask", function () {
+      const type =  jsonData.data.relationships.lastSync.type;
+      expect(type).to.equal("SyncTask");
+  });
+  
+  test("lastFailedSync is exist", function () {
+       expect(jsonData.data.relationships.lastFailedSync).to.exist;
+  
+  });
+  
+  
+  
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
