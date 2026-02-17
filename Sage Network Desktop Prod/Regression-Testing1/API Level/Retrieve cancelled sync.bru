@@ -1,0 +1,131 @@
+meta {
+  name: Retrieve cancelled sync
+  type: http
+  seq: 22
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks/{{connectorSyncTaskId}}?include=Details
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: Details
+}
+
+headers {
+  Accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  
+  test("Check for 'Completed' status", function () {
+  const targetStatus = "Cancelled";
+  var responseData = res.getBody();
+           expect(targetStatus).to.equal(responseData.data.attributes.status);
+  });
+  
+  
+  
+  var jsonData = res.getBody();
+  
+  // Test for the operationType in the response
+  test("Operation type is equal to 'ToNetwork'", function () {
+      expect(jsonData.data.attributes.operationType).to.equal('ToNetwork');
+  });
+  //var jsonData = res.getBody();
+  var jsonData = res.getBody();
+  
+  // Test for the packageType in the response
+  test("Package type is equal to 'Full'", function () {
+      expect(jsonData.data.attributes.packageType).to.equal('Full');
+  });
+  var jsonData = res.getBody();
+  
+  // Test for the stepName in the response
+  test("Step name is equal to 'Finalized'", function () {
+      expect('Finalized').to.equal(jsonData.data.attributes.stepName);
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for datasetId
+  test("Dataset ID is not null and has size of 36 bits", function () {
+      expect(jsonData.data.attributes.datasetId).to.not.be.null;
+      expect(jsonData.data.attributes.datasetId).to.have.lengthOf(36);
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for attempts and summary fields
+  test("Attempts is equal to 1", function () {
+      expect(jsonData.data.attributes.attempts).to.equal(1); 
+  });
+  var jsonData = res.getBody();
+  
+  
+  
+  test("Message is equal to 'Sync task has been canceled'", function () {
+       expect('Sync task has been canceled').to.equal(jsonData.data.attributes.message);
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for id
+  test("ID is not null and has size of 36 bits", function () {
+      expect(jsonData.data.id).to.not.be.null;
+      expect(jsonData.data.id).to.have.lengthOf(36);
+  });
+  var jsonData = res.getBody();
+  
+  // Test for the type in the response
+  test("Type is equal to 'SyncTask'", function () {
+      expect(jsonData.data.type).to.equal('SyncTask');
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for Company updateCount in the report
+  
+  
+  
+  
+  
+  
+  
+  // Combined test for objectType
+  test("Object type is equal to 'syncs'", function () {
+      expect(jsonData.meta.objectType).to.equal('syncs');
+  });
+  var jsonData = res.getBody();
+  var today = new Date();
+  var day = String(today.getDate()).padStart(2, '0');
+  var month = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+  var year = today.getFullYear();
+  var formattedDate = day + '/' + month + '/' + year;
+  
+  // Combined test to check if createdAt and modifiedAt include today's date
+  test("createdAt and modifiedAt include today's date", function () {
+      expect(jsonData.meta.createdAt).to.include(year);
+      expect(jsonData.meta.modifiedAt).to.include(year);
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for product field
+  test("Product field is not null and does not equal 'Unassigned'", function () {
+      expect(jsonData.data.attributes.product).to.not.be.null;
+      expect(jsonData.data.attributes.product).to.not.equal('Unassigned');
+  });
+  var jsonData = res.getBody();
+  
+  // Combined test for objectType
+  test("Response contains an object with 'objectType' equal to 'syncs'", function () {
+      expect(jsonData.meta).to.have.property('objectType', 'syncs');
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

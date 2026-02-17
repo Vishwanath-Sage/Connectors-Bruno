@@ -1,0 +1,32 @@
+meta {
+  name: Cancle sync
+  type: http
+  seq: 20
+}
+
+delete {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks/{{connectorSyncTaskId}}?include=Details
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: Details
+}
+
+headers {
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+  Idempotency-Key: {{$guid}}
+}
+
+script:post-response {
+  test("Sync is cancelled", function(){
+      expect(res.getStatus()).to.equal(204);
+  })
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
