@@ -1,7 +1,7 @@
 meta {
-  name: Get tenant summary
+  name: Get blank IntegrationMode
   type: http
-  seq: 24
+  seq: 35
 }
 
 get {
@@ -44,12 +44,12 @@ script:post-response {
       expect(lastSeenDate).to.equal(today);
   });
   
-  test("licenseStatust is equal Active", function () {
-      expect(jsonData.data.attributes.licenseStatus).to.equal("Active");
-  });
+  // test("licenseStatust is equal Active", function () {
+  //     expect(jsonData.data.attributes.licenseStatus).to.equal("Active");
+  // });
   
-  test("integrationMode is equal Live", function () {
-      expect(jsonData.data.attributes.integrationMode).to.equal("Live");
+  test("integrationMode is equal Test", function () {
+      expect(jsonData.data.attributes.integrationMode).to.equal("Test");
   });
   
   test("Size of ID is equal to 36", function () {

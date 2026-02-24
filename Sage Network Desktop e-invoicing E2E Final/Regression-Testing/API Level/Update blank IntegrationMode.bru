@@ -1,0 +1,119 @@
+meta {
+  name: Update blank IntegrationMode
+  type: http
+  seq: 34
+}
+
+patch {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks?take=20&skip=0
+  body: json
+  auth: inherit
+}
+
+params:query {
+  take: 20
+  skip: 0
+}
+
+headers {
+  Idempotency-Key: {{$guid}}
+  traceparent: 
+  tracestate: 
+  Content-Type: application/vnd.api+json
+  Accept: application/vnd.api+json
+}
+
+body:json {
+  {
+      "data": {
+          "type": "synctask",
+          "id": "{{connectorSyncTaskId}}",
+          "attributes": {
+              "summary": {
+                  "totalInvoices": 0,
+                  "totalPayments": 0,
+                  "totalCompanies": 0,
+                  "totalContacts": 0,
+                  "totalGlAccounts": 0,
+                  "totalGlAccountEntries": 0,
+                  "totalCustomFields": 0
+              }
+          },
+          "relationships": {
+              "attachment": {
+                  "data": {
+                      "id": "{{connectorAttachmentId}}",
+                      "type": "attachment"
+                  }
+              }
+          }
+      }
+  }
+}
+
+script:post-response {
+  test("Response code is 202", function () {
+      expect(res.getStatus()).to.equal(202);
+  });
+  // Test for response body schema
+  test("Type is equal to synctask", function () {
+      var responseBody = res.getBody();
+      expect(responseBody.data.type).to.equal('SyncTask');
+  });
+  // Test to check if the id is not null and has a length of 36
+  test("Id should not be null and have a length of 36", function () {
+      var responseBody = res.getBody();
+      expect(responseBody.data.id).to.not.be.null;
+      expect(responseBody.data.id).to.have.lengthOf(36);
+  });
+  // Test to check if the status is Awaiting
+  test("Status should be Awaiting", function () {
+      var responseBody = res.getBody();
+      expect(responseBody.data.attributes.status).to.be.oneOf(["Completed","Awaiting","Processing"]);;
+  });
+  // Add a test to check if the operationType is ToNetwork
+  test("OperationType should be ToNetwork", function () {
+      var responseBody = res.getBody();
+      expect(responseBody.data.attributes.operationType).to.equal('ToNetwork');
+  });
+  // Test to check if the message is 'Sync request has been Updated'
+  test("Message should be 'Sync request has been Updated'", function () {
+      var responseBody = res.getBody();
+  
+      console.log(responseBody.data.attributes.message);
+     
+  expect(responseBody.data.attributes.message).to.be.oneOf([
+      "Sync request has been Updated",
+      "Sync is completed, for detail information see the service level status messages."
+   ]);
+  
+  });
+  // Add a test to check if the packageType is Full
+  test("PackageType should be Full", function () {
+      var responseBody = res.getBody();
+      expect(responseBody.data.attributes.packageType).to.equal('Full');
+  });
+  // Add a test to check if the stepName is Ready
+  test("StepName should be Ready", function () {
+      var responseBody = res.getBody();
+      expect(responseBody.data.attributes.stepName).to.be.oneOf(["Ready", "Finalized"]);
+  });
+  
+  test("Attempts is equal to 0", function () {
+      const responseData = res.getBody();
+      expect(responseData.data.attributes.attempts).to.equal(0);
+  });
+  
+  // Add a test to check if the createdAt and modifiedAt contain today's date
+  test("CreatedAt and modifiedAt should contain today's date", function () {
+      var responseBody = res.getBody();
+      var today = new Date().toISOString().split('T')[0]; // Get today's date in yyyy-mm-dd format
+      expect(responseBody.meta.createdAt).to.include(today);
+      expect(responseBody.meta.modifiedAt).to.include(today);
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
