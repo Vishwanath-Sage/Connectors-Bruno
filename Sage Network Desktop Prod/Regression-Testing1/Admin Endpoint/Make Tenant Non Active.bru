@@ -1,5 +1,5 @@
 meta {
-  name: Make Tenant Active
+  name: Make Tenant Non Active
   type: http
   seq: 3
 }
@@ -22,7 +22,7 @@ body:json {
       "type": "string",
       "id": "{{networkProductInstancesTenantId}}",
       "attributes": {
-        "status": true
+        "status": false
       }
     }
   }
@@ -72,10 +72,10 @@ script:post-response {
       expect(id.length).to.equal(36);
   });
   
-  test("isActive = true", function () {
+  test("isActive = false", function () {
       const responseData = res.getBody();
       const isActive = responseData.data.attributes.isActive;
-      expect(isActive).to.equal(true);
+      expect(isActive).to.equal(false);
   });
   
   

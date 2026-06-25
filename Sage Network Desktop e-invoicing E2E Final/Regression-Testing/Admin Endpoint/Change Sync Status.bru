@@ -1,11 +1,11 @@
 meta {
-  name: Make Tenant Active
+  name: Change Sync Status
   type: http
-  seq: 3
+  seq: 7
 }
 
 patch {
-  url: {{connectorBaseUrl}}/connectors/erp/portal/datasets
+  url: {{connectorBaseUrl}}/connectors/erp/portal/sync-tasks
   body: json
   auth: inherit
 }
@@ -18,13 +18,21 @@ headers {
 
 body:json {
   {
-    "data": {
-      "type": "string",
-      "id": "{{networkProductInstancesTenantId}}",
-      "attributes": {
-        "status": true
+      "data": {
+          "id": "409d271a-1127-409d-bb94-bfdb5b75088e",
+          "type": "synctask",
+          "attributes":
+  
+  {         "status": "failed",         "step": "finalized",         "message":"Sync done in ADS at 638658293980686151 for Financial"         }
+  ,
+          "relationships": {
+              "dataset": {
+                  "data":
+  
+  {                     "id": "ea04cca2-7f83-5e17-0820-6f57f06486b1",                     "type": "synctask"                 }
+              }
+          }
       }
-    }
   }
 }
 
@@ -72,10 +80,10 @@ script:post-response {
       expect(id.length).to.equal(36);
   });
   
-  test("isActive = true", function () {
+  test("isActive = false", function () {
       const responseData = res.getBody();
       const isActive = responseData.data.attributes.isActive;
-      expect(isActive).to.equal(true);
+      expect(isActive).to.equal(false);
   });
   
   

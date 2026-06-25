@@ -1,36 +1,23 @@
 meta {
-  name: Make Tenant Active
+  name: Get tenant summary
   type: http
-  seq: 3
+  seq: 1
 }
 
-patch {
-  url: {{connectorBaseUrl}}/connectors/erp/portal/datasets
-  body: json
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/portal/datasets/{{networkProductInstancesTenantId}}
+  body: none
   auth: inherit
 }
 
 headers {
-  Idempotency-Key: ce4cc2d9-3f05-479d-71de-516f76c1e277
+  Idempotency-Key: {{$guid}}
   Authorization: Bearer eyJraWQiOiJiQXJ0dG1YYjF3eklIekFXdkdmNWFLbVRiNVVBQ08zZ1VpaXZFdWxzY1dBPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI0MmZmMDczOC1jNjY3LTRjNWItOGNjYy0wZWI2NTRmNTcyYzkiLCJjb2duaXRvOmdyb3VwcyI6WyJTTlBDb25uZWN0b3JzLUFkbWluR3JvdXAiLCJldS13ZXN0LTFfeXNxd2JCNlF5X0F6dXJlQUQiLCJTTlBDb25uZWN0b3JzLVJlZ3VsYXJHcm91cCJdLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtd2VzdC0xLmFtYXpvbmF3cy5jb21cL2V1LXdlc3QtMV95c3F3YkI2UXkiLCJ2ZXJzaW9uIjoyLCJjbGllbnRfaWQiOiIyNDJjNWVmNm5hcmpic3Q2ZWFpZHNqcDRlIiwidG9rZW5fdXNlIjoiYWNjZXNzIiwic2NvcGUiOiJvcGVuaWQiLCJhdXRoX3RpbWUiOjE3NjY5OTE2NjYsImV4cCI6MTc2NzAzNDg2NiwiaWF0IjoxNzY2OTkxNjY2LCJqdGkiOiJiODUwYzU4OC0wZjU4LTQ0YWQtODQ1Mi1iNjIyOTQzOTlmZDkiLCJ1c2VybmFtZSI6ImF6dXJlYWRfcHVqYS5rdW1hcmkyQHNhZ2UuY29tIn0.OKMvhNypmO3RUr0eS7I6UtxaQi_i-F72ZD8CWEH7CtWWNnOCOYjqmZKkMtIrQ411LQwF-gjJVl9xEyleriyG2LZ8L6wDwcLwLbtZXWbjOcy-xPyLiFNotnEhd6QLsW65cFYqDA6U_m9YYgsBSjc-gtQYj0KHw6xZCgznmJ7AqCcUA4QMeYE-TMmNdCzUQq19d3ofLcL93Z4k11SCvrxLnSb4Kbl6IcbhdGfcyn-sMGXyMbX6_rz4D-YQHPgpM5IsTEKe2ZunN0OObxWe3UP5M3WdcchdC9I-cbdqPJscfUBIhjiD9czIP5CFxq4oxIrDeJKx-d4TQne7lgOruBxTGQ
-  Content-Type: application/vnd.api+json
-}
-
-body:json {
-  {
-    "data": {
-      "type": "string",
-      "id": "{{networkProductInstancesTenantId}}",
-      "attributes": {
-        "status": true
-      }
-    }
-  }
 }
 
 script:post-response {
   test("Response status code is 200", function () {
-      expect(res.getStatus()).to.equal(202);
+      expect(res.getStatus()).to.equal(200);
   });
   
   var jsonData = res.getBody();
@@ -62,8 +49,8 @@ script:post-response {
       expect(jsonData.data.attributes.licenseStatus).to.equal("Active");
   });
   
-  test("licenseStatus is equal Active", function () {
-      expect(jsonData.data.attributes.licenseStatus).to.equal("Active");
+  test("integrationMode is equal Live", function () {
+      expect(jsonData.data.attributes.integrationMode).to.equal("Live");
   });
   
   test("Size of ID is equal to 36", function () {
@@ -72,10 +59,10 @@ script:post-response {
       expect(id.length).to.equal(36);
   });
   
-  test("isActive = true", function () {
+  test("type = Dataset", function () {
       const responseData = res.getBody();
-      const isActive = responseData.data.attributes.isActive;
-      expect(isActive).to.equal(true);
+      const type = responseData.data.type;
+      expect(type).to.equal("Dataset");
   });
   
   
