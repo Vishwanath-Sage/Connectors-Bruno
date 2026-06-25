@@ -1,0 +1,39 @@
+meta {
+  name: Get WebHook Notification
+  type: http
+  seq: 42
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}
+  body: none
+  auth: inherit
+}
+
+headers {
+  Accept: application/vnd.api+json
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  var jsonData = res.getBody();
+  
+  
+  test("notificationSubscriptionAvailable is equal true", function () {
+      expect(jsonData.data.attributes.notificationSubscriptionAvailable).to.equal(true);
+  });
+  
+  
+  
+  
+  
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

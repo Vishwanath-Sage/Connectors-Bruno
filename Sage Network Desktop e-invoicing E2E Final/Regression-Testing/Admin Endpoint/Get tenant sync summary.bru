@@ -1,0 +1,189 @@
+meta {
+  name: Get tenant sync summary
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/portal/datasets/{{networkProductInstancesTenantId}}?include=syncs
+  body: none
+  auth: inherit
+}
+
+params:query {
+  include: syncs
+}
+
+headers {
+  Idempotency-Key: {{$guid}}
+  Authorization: Bearer eyJraWQiOiJiQXJ0dG1YYjF3eklIekFXdkdmNWFLbVRiNVVBQ08zZ1VpaXZFdWxzY1dBPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI0MmZmMDczOC1jNjY3LTRjNWItOGNjYy0wZWI2NTRmNTcyYzkiLCJjb2duaXRvOmdyb3VwcyI6WyJTTlBDb25uZWN0b3JzLUFkbWluR3JvdXAiLCJldS13ZXN0LTFfeXNxd2JCNlF5X0F6dXJlQUQiLCJTTlBDb25uZWN0b3JzLVJlZ3VsYXJHcm91cCJdLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtd2VzdC0xLmFtYXpvbmF3cy5jb21cL2V1LXdlc3QtMV95c3F3YkI2UXkiLCJ2ZXJzaW9uIjoyLCJjbGllbnRfaWQiOiIyNDJjNWVmNm5hcmpic3Q2ZWFpZHNqcDRlIiwidG9rZW5fdXNlIjoiYWNjZXNzIiwic2NvcGUiOiJvcGVuaWQiLCJhdXRoX3RpbWUiOjE3NjY5OTE2NjYsImV4cCI6MTc2NzAzNDg2NiwiaWF0IjoxNzY2OTkxNjY2LCJqdGkiOiJiODUwYzU4OC0wZjU4LTQ0YWQtODQ1Mi1iNjIyOTQzOTlmZDkiLCJ1c2VybmFtZSI6ImF6dXJlYWRfcHVqYS5rdW1hcmkyQHNhZ2UuY29tIn0.OKMvhNypmO3RUr0eS7I6UtxaQi_i-F72ZD8CWEH7CtWWNnOCOYjqmZKkMtIrQ411LQwF-gjJVl9xEyleriyG2LZ8L6wDwcLwLbtZXWbjOcy-xPyLiFNotnEhd6QLsW65cFYqDA6U_m9YYgsBSjc-gtQYj0KHw6xZCgznmJ7AqCcUA4QMeYE-TMmNdCzUQq19d3ofLcL93Z4k11SCvrxLnSb4Kbl6IcbhdGfcyn-sMGXyMbX6_rz4D-YQHPgpM5IsTEKe2ZunN0OObxWe3UP5M3WdcchdC9I-cbdqPJscfUBIhjiD9czIP5CFxq4oxIrDeJKx-d4TQne7lgOruBxTGQ
+}
+
+script:post-response {
+  test("Response status code is 200", function () {
+      expect(res.getStatus()).to.equal(200);
+  });
+  
+  var jsonData = res.getBody();
+  
+  test("Size of product ID is equal to 36", function () {
+      const responseData = res.getBody();
+      const id = responseData.data.attributes.productId;
+      expect(id.length).to.equal(36);
+  });
+  
+  test("productName field is not null and does not equal 'Unassigned'", function () {
+      expect(jsonData.data.attributes.productName).to.not.be.null;
+      expect(jsonData.data.attributes.productName).to.not.equal('Unassigned');
+  });
+  
+  test("fullSyncCount is not null and partialSyncCount is not equal null", function () {
+      expect(jsonData.data.attributes.fullSyncCount).to.not.be.null;
+      expect(jsonData.data.attributes.partialSyncCount).to.not.be.null;
+  });
+  
+  test("lastSeen field contains today's date", function () {
+      var lastSeen = jsonData.data.attributes.lastSeen;
+      var lastSeenDate = lastSeen.split('T')[0];
+      var today = new Date().toISOString().split('T')[0];
+      expect(lastSeenDate).to.equal(today);
+  });
+  
+  test("licenseType is not null", function () {
+      expect(jsonData.data.attributes.licenseType).to.not.be.null;
+  });
+  
+  test("integrationMode is equal Live", function () {
+      expect(jsonData.data.attributes.integrationMode).to.equal("Live");
+  });
+  
+  test("isActive is equal true", function () {
+      expect(jsonData.data.attributes.isActive).to.equal(true);
+  });
+  
+  test("Size of ID is equal to 36", function () {
+      const responseData = res.getBody();
+      const id = responseData.data.id;
+      expect(id.length).to.equal(36);
+  });
+  
+  test("type = Dataset", function () {
+      const responseData = res.getBody();
+      const type = responseData.data.type;
+      expect(type).to.equal("Dataset");
+  });
+  
+  var jsonData1 = res.getBody();
+  test("type is equal SyncTask", function () {
+      expect(jsonData1.included[0].data.type).to.equal("SyncTask");
+  });
+  
+  test("Size of ID is equal to 36", function () {
+     const idofsync = jsonData1.included[0].data.id;
+      expect(idofsync.length).to.equal(36);
+  });
+  
+  test("status is equal Completed", function () {
+      expect(jsonData1.included[0].data.attributes.status).to.equal("Completed");
+  });
+  
+  
+  
+  
+  test("createdAt field contains today's date", function () {
+      var createdAt = jsonData.meta.createdAt;
+      var createdAtDate = createdAt.split('T')[0];
+      var today = new Date().toISOString().split('T')[0];
+      expect(createdAtDate).to.equal(today);
+  });
+  
+  test("modifiedAt field contains today's date", function () {
+      var modifiedAt = jsonData.meta.modifiedAt;
+      var modifiedAtDate = modifiedAt.split('T')[0];
+      var today = new Date().toISOString().split('T')[0];
+      expect(modifiedAtDate).to.equal(today);
+  });
+  
+  // included script
+  
+  test("type is equal SyncTask", function () {
+      expect(jsonData.included[0].data.type).to.equal("SyncTask");
+  });
+  
+  test("Size of ID is equal to 36", function () {
+      const responseData = res.getBody();
+      const id = responseData.included[0].data.id;
+      expect(id.length).to.equal(36);
+  });
+  
+  test("status is equal to Completed", function () {
+       expect(jsonData.included[0].data.attributes.status).to.equal("Completed");
+  });
+  
+  test("operationType is equal to ToNetwork", function () {
+       expect(jsonData.included[0].data.attributes.operationType).to.equal("ToNetwork");
+  });
+  
+  test("message is not null", function () {
+       expect(jsonData.included[0].data.attributes.message).to.not.be.null;
+  });
+  
+  test("packageType is not null", function () {
+       expect(jsonData.included[0].data.attributes.packageType).to.not.null;
+  });
+  
+  test("Step name is equal to 'Finalized'", function () {
+      expect('Finalized').to.equal(jsonData.included[0].data.attributes.stepName);
+  });
+  
+  test("Product field is not null and does not equal 'Unassigned'", function () {
+      expect(jsonData.included[0].data.attributes.productName).to.not.be.null;
+      expect(jsonData.included[0].data.attributes.productName).to.not.equal('Unassigned');
+  });
+  
+  test("Size of product ID is equal to 36", function () {
+      const responseData = res.getBody();
+      const id = responseData.included[0].data.attributes.productId;
+      expect(id.length).to.equal(36);
+  });
+  
+  test("processStartDate field contains today's date", function () {
+      var processStartDate = jsonData.included[0].data.attributes.processStartDate;
+      var processStartDateDate = processStartDate.split('T')[0];
+      var today = new Date().toISOString().split('T')[0];
+      expect(processStartDateDate).to.equal(today);
+  });
+  
+  test("processEndDate field contains today's date", function () {
+      var processEndDate = jsonData.included[0].data.attributes.processEndDate;
+      var processEndDateDate = processEndDate.split('T')[0];
+      var today = new Date().toISOString().split('T')[0];
+      expect(processEndDateDate).to.equal(today);
+  }); 
+  
+  test("attempts is equal to 0", function () {
+      expect(0).to.equal(jsonData.included[0].data.attributes.attempts);
+  });
+  
+  test("createdAt field contains today's date", function () {
+      var createdAt = jsonData.included[0].meta.createdAt;
+      var createdAtDate = createdAt.split('T')[0];
+      var today = new Date().toISOString().split('T')[0];
+      expect(createdAtDate).to.equal(today);
+  });
+  
+  test("modifiedAt field contains today's date", function () {
+      var modifiedAt = jsonData.included[0].meta.modifiedAt;
+      var modifiedAtDate = modifiedAt.split('T')[0];
+      var today = new Date().toISOString().split('T')[0];
+      expect(modifiedAtDate).to.equal(today);
+  }); 
+  
+  
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
