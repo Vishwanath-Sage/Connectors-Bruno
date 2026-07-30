@@ -1,0 +1,15 @@
+meta {
+  name: Get Subscriptions
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/subscriptions
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

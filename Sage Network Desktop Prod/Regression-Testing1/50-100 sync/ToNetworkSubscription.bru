@@ -1,0 +1,46 @@
+meta {
+  name: ToNetworkSubscription
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/subscriptions
+  body: json
+  auth: inherit
+}
+
+headers {
+  accept: application/vnd.api+json
+  Idempotency-Key: {{$guid}}
+  Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkEwUTZSTnJVN3dvZWFLQXE4dFVfQyJ9.eyJodHRwczovL3NhZ2UuY29tL3NjaS9hemkiOiIyZTE1NzliYzgyMzcyY2NmMWUyMmNiZTY0MmM1NDViNDkzNTNiODk2NWU1ZiIsImh0dHBzOi8vc2FnZS5jb20vc2NpL2F6biI6Im9uV2luZG93c2RldmljZUdCIiwiaXNzIjoiaHR0cHM6Ly9pZC5hdXRoLnNhZ2UuY29tLyIsInN1YiI6ImF1dGgwfGF6aV8yZTE1NzliYzgyMzcyY2NmMWUyMmNiZTY0MmM1NDViNDkzNTNiODk2NWU1ZiIsImF1ZCI6WyJzbmV0LWNsb3Vkb3BzL25ldHdvcmsvYXBpIiwiaHR0cHM6Ly9zYWdlLWF1dGgtcHJvZC5zYWdlaWRwcm9kLmF1dGgwYXBwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3NzU4MTAwNzIsImV4cCI6MTc3NTgzODg3Miwic2NvcGUiOiJvcGVuaWQgZW1haWwgb2ZmbGluZV9hY2Nlc3MiLCJndHkiOiJwYXNzd29yZCIsImF6cCI6InhJY0ZNQ2t4M0Y3OXVKdllXTTBZZW5JWUVIajRlMUpYIn0.zfIIBIPLKMrE4X6RGyXO8AHodRqKBeLP-U4ydBlPGFdX4ccsr-N6gD5U7xq59MpoTGvSYaehX8P8HGNSmXpGDG4iFFA4HhVSt3kCJHRajYcKq-PoYTZ5Q_tr7UxQxsXFeXge-uQXJbYpP4HNJLmHtXE8X9XSu9GKs3oaTUUbUNaeG3LB7qWXZb20XG9DiUB5fIQ_ki83iybcO4oiuH76UmeG3v1WrkXm13tHNjLoZySaJKsE6ludUw4ZL1xirvRUJaduq9PuQpyJd-1UlBIDiSUzATpWqB5Ra7XRwXBkHcEficw4Ubr4QMSF2EnIWg1sVQdN7jSR9B1cbzZfDi5v-A
+  Content-Type: application/vnd.api+json
+}
+
+body:json {
+  {
+    "data" : {
+      "type" : "Subscription",
+      "attributes" : {
+        "endpoint" : "https://api-dev.network-eng.sage.com/connectors/erp/webhooks",
+        "audience" : "snet-dev/network/api",
+        "endpointType" : "https",
+        "clientstate" : "GUID=47288F4887A64B5AE0633F06850AC410",
+        "scope" : {
+          "resource" : "SyncTask",
+          "eventType" : "ToNetwork",
+          "source" : "2bd7edd6-857f-7081-da0f-a7a4ad159459",
+          "datasetId" : "faa435ef-05da-1230-a383-4813464f91a3"
+        },
+        "eventData" : {
+          "clientState" : "GUID=47288F4887A64B5AE0633F06850AC410"
+        }
+      }
+    }
+  }
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}

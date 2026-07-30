@@ -1,0 +1,47 @@
+meta {
+  name: Retrieve sync for 401 error code copy
+  type: http
+  seq: 43
+}
+
+get {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/sync-tasks/{{connectorSyncTaskId}}?include=Details
+  body: none
+  auth: bearer
+}
+
+params:query {
+  include: Details
+}
+
+headers {
+  Accept: application/vnd.api+json
+}
+
+auth:bearer {
+  token: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkdoSWRxS2JCZld5UTNoeWs1Wmd3MiJ9.eyJodHRwczovL3NhZ2UuY29tL3NjaS9hemkiOiI3OGQ5ZWRjMmYxYTQ5YjIyMzgwYzg0ZmZkZTNlNTA5NjQ0MmZiZmQ2YjBhYiIsImh0dHBzOi8vc2FnZS5jb20vc2NpL2F6biI6Im9uV2luZG93c2RldmljZUdCIiwiaXNzIjoiaHR0cHM6Ly9pZC5hdXRoLXNoYWRvdy5zYWdlLmNvbS8iLCJzdWIiOiJhdXRoMHxhemlfNzhkOWVkYzJmMWE0OWIyMjM4MGM4NGZmZGUzZTUwOTY0NDJmYmZkNmIwYWIiLCJhdWQiOlsic25ldC1kZXYvbmV0d29yay9hcGkiLCJodHRwczovL3NhZ2UtYXV0aC1zaGFkb3cuc2FnZWlkbm9ucHJvZC5hdXRoMGFwcC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzgzOTM5OTY3LCJleHAiOjE3ODM5Njg3NjcsInNjb3BlIjoib3BlbmlkIGVtYWlsIG9mZmxpbmVfYWNjZXNzIiwiZ3R5IjoicGFzc3dvcmQiLCJhenAiOiI2Rmw0Uzk1b0s2Z05rYmJlSDdDeXFJbkgyNm82SFozaiJ9.3wrKamH4KUPyxTxnB_6D2imBG8fLm6FKOQCDUpZ28FsusSj2a_jVUddHZzE5nFZdjtukrCNCWSnhYE7xLyvIWgIPqxWMxUDjqtjwXgfRAszvyiWHwEpJR1zu9vHIAVxvzOp1xHNviKzz-tAyJrNWvno3FEgTS1k_y7Ij979eTeuhrT_IE5VdkKFHzPdw1tXg3lFEeMx3eeRNDoxC3RQ4sDSs7arYTl96XbZWiad5z7Rf8lLOT86q-w23q6vZy-jXs9Vs0BOyW68enfP2DQhk6yO8blo4XBQF49pq_jHsN-pbOAypyL6fe7gcF7lup32iOObVTaCyv8tj-10IcvLL8w
+}
+
+script:post-response {
+  test("Response status code is 401", function () {
+      expect(res.getStatus()).to.equal(401);
+  });
+  
+  var jsonData = res.getBody();
+  
+  // Test for the operationType in the response
+  test("Title is eqaul to Unauthorized", function () {
+      expect(jsonData.errors[0].title).to.equal('Unauthorized');
+  });
+  
+  // Test for the packageType in the response
+  test("details is equal to Missing required claims for authorization.", function () {
+      expect(jsonData.errors[0].detail).to.equal('DatasetId claim not found in principal');
+  });
+  
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

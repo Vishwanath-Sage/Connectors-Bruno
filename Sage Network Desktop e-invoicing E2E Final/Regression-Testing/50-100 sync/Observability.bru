@@ -1,0 +1,51 @@
+meta {
+  name: Observability
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{connectorBaseUrl}}/connectors/erp/datasets/{{networkProductInstancesTenantId}}/observability/events
+  body: json
+  auth: inherit
+}
+
+headers {
+  accept: application/vnd.api+json
+  authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkdoSWRxS2JCZld5UTNoeWs1Wmd3MiJ9.eyJodHRwczovL3NhZ2UuY29tL3NjaS9hemkiOiIzY2UyNTMzMTdhZGQzMzQwZGFjMDNlOWYyMGVjZTU4Zjk1YjUzM2QzNmUzOSIsImh0dHBzOi8vc2FnZS5jb20vc2NpL2F6biI6Im9uV2luZG93c2RldmljZUdCIiwiaXNzIjoiaHR0cHM6Ly9pZC5hdXRoLXNoYWRvdy5zYWdlLmNvbS8iLCJzdWIiOiJhdXRoMHxhemlfM2NlMjUzMzE3YWRkMzM0MGRhYzAzZTlmMjBlY2U1OGY5NWI1MzNkMzZlMzkiLCJhdWQiOlsic25ldC1kZXYvbmV0d29yay9hcGkiLCJodHRwczovL3NhZ2UtYXV0aC1zaGFkb3cuc2FnZWlkbm9ucHJvZC5hdXRoMGFwcC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzc1NDU4OTc4LCJleHAiOjE3NzU0ODc3NzgsInNjb3BlIjoib3BlbmlkIGVtYWlsIG9mZmxpbmVfYWNjZXNzIiwiZ3R5IjoicGFzc3dvcmQiLCJhenAiOiJtemVWQ09pSWlUejllZFY2OXVxdjBKOEdMQzVXR2I4RSJ9.LririQlRhtnoumGd9eCabK7HhC4SLyv1gQdJ9f_-WhCdkSr2-FVqVD3X6mBCgMDMHyMm1TgSF9a9dceYz96cjI2GgrKlni-OopVNQ6l-fOWPly5C8MjE-Gu31MGtI2AN4MdLB_7WpsU0B8pNHe5EoZwKLY8Ytfb9yhokWBh0BhNRkn0R6Fz09RmMrVkFMlwgdbpc_edcn_IyGIlNZygIpd1knvche5tNfr0XgoIXoLhoeH2yUKp_i5FgVEnPioGUc_94VGnoDADP2nqreBQqq04-HPWqfW3gq9rYPQ0nQjnDCuC_2qF8QY99HHLGya0FAcZ6pa5QG0Dka1J5I36phg
+  content-type: application/vnd.api+json
+  idempotency-key: 1c881802-09f5-4564-94af-f1f7f997698a
+}
+
+body:json {
+  {
+    "data": {
+      "type": "Event",
+      "attributes": {
+        "eventType": "SyncTaskEvent",
+        "logs": [
+          {
+            "attributes": {
+              "severity": "Info",
+              "detail": "Creating an event before the empty sync is created",
+              "timestamp": "44/10/2025 16:17:41 AM"
+            },
+            "id": "{{connectorSyncTaskId}}",
+            "type": "syncTask"
+          }
+        ]
+      },
+      "relationships": {
+        "syncTask": {
+          "id": "{{connectorSyncTaskId}}",
+          "type": "SyncTask"
+        }
+      }
+    }
+  }
+}
+
+settings {
+  encodeUrl: false
+  timeout: 0
+}
